@@ -9,9 +9,13 @@ logging.basicConfig(level=logging.INFO, format=FORMAT)
 
 class Appointment():
 
-	def __init__(self, ) -> None:
+	def __init__(self, pincode_from, my_pincode, pincode_to) -> None:
 
 		self.slots = pd.DataFrame()
+
+		self.pincode_from = pincode_from
+		self.my_pincode = my_pincode
+		self.pincode_to = pincode_to
 		
 		self.day = 0
 		self.month = 0
@@ -61,7 +65,8 @@ class Appointment():
 
 		slots_list = []
 		for centre in centers:
-		
+			
+			name = centre['name']
 			centre_id = centre['center_id']
 			pincode = centre['pincode']
 			sessions = centre['sessions']
@@ -77,6 +82,7 @@ class Appointment():
 				for time in slots:
 
 					entry = {
+						'name': name,
 						'center_id': centre_id,
 						'pincode': pincode,
 						'date': date,
@@ -92,12 +98,15 @@ class Appointment():
 
 		return self.slots
 	
-	def find_suitable_slots(self, slots: pd.DataFrame, is_44_or_less=1, is_45_or_more=1, nearest_to=302006, pincode_from=000000, pincode_to=999999):
+	def find_suitable_slots(self, slots: pd.DataFrame, is_44_or_less=1, is_45_or_more=1) -> pd.DataFrame:
 
-		slots['pincode_dist'] = abs(slots['pincode'] - nearest_to)
+		if len(slots) == 0:
+			return slots
+
+		slots['pincode_dist'] = abs(slots['pincode'] - self.my_pincode)
 		slots['sort'] = slots['date'].str.split('-', expand=True)[0]
 
-		slots = slots[(pincode_from <= slots.pincode) & (slots.pincode <= pincode_to)]
+		slots = slots[(self.pincode_from <= slots.pincode) & (slots.pincode <= self.pincode_to)]
 
 		slots = slots.sort_values(by=['pincode_dist', 'sort', 'capacity'], ascending=(True, True, False))
 
@@ -112,7 +121,6 @@ class Appointment():
 
 		final_df = pd.concat([df_44_or_less, df_45_or_more])
 		final_df.reset_index(drop=True, inplace=True)
-
 
 		return final_df
 
@@ -130,13 +138,18 @@ if __name__ == '__main__':
 	# bf = Beneficiaries()
 	# num_44_or_less, num_45_or_more, bfs = bf.get_beneficiaries(token)
 
-	ap = Appointment()
+	ap = Appointment(302000, 302006, 304000)
 
-	slots_1 = ap.find_slots(505)
-	slots_2 = ap.find_slots(506)
-	slots_comb = pd.concat([slots_1, slots_2])
+	district_codes = [505, 506]
+	
+	slots = []
+	for d_code in district_codes:
+		slots.append(ap.find_slots(d_code))
+
+	slots_comb = pd.concat(slots)
 	slots_comb.drop_duplicates(inplace=True, ignore_index=True)
-	df = ap.find_suitable_slots(slots_comb, 2, 30, 302006, 302000, 304000)
+
+	df = ap.find_suitable_slots(slots_comb, num_44_or_less=3, num_45_or_more=2)
 
 
 

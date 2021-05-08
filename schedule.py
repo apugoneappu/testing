@@ -3,8 +3,8 @@ import json
 import pandas as pd
 import time
 import logging
-
-from notification import send_notification
+import sys
+from captcha import Captcha
 
 logger = logging.getLogger(__name__)
 FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
@@ -17,6 +17,7 @@ class Schedule():
 		self.url = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 		self.payload = {
 			"center_id": 619357,
+			"captcha": "12AB34",
 			"session_id": "80bbd83b-fa1a-4c77-bd8a-e30b8a4e35cd",
 			"beneficiaries": [
 				"95254777605690"
@@ -38,13 +39,19 @@ class Schedule():
 			'referer': 'https://selfregistration.cowin.gov.in/',
 			'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
 		}
+
+		self.captcha = Captcha()
 	
 	def book_vaccine(self, token, bfs: list, appointments: pd.DataFrame):
 
-		self.headers['authorization'] = f'Bearer {token}'
-		df_bfs = pd.DataFrame(bfs)
+		if len(bfs) == 0 or len(appointments) == 0:
+			return
 
-		for (dose, under_45), bf_group in df_bfs.groupby(['dose', 'under_45']):
+		self.headers['authorization'] = f'Bearer {token}'
+
+		self.payload['captcha'] = self.captcha.get(token)
+
+		for (dose, under_45), bf_group in bfs.groupby(['dose', 'under_45']):
 			
 			self.payload['beneficiaries'] = list(bf_group.id)
 			self.payload['dose'] = int(dose) # needed for converting from np.int64 -> int
@@ -65,7 +72,10 @@ class Schedule():
 				status = self.try_booking(self.payload, self.headers)
 
 				if (status == 0):
-					send_notification('Vaccine booked!')
+					names_str = " | ".join(list(bf_group['name']))
+					appointment_date = appointment['date']
+					centre_name = appointment['name']
+					logging.info(f'Vaccine booked on {appointment_date} at {centre_name} for: {names_str}!')
 					break
 
 	
@@ -96,30 +106,51 @@ if __name__ == '__main__':
 	from otp import OTP
 	from beneficiaries import Beneficiaries
 	from appointment import Appointment
+	from captcha import Captcha
 
 	otp = OTP()
-	txnId = otp.send_otp(7895755566)
+	mobile_number = input('Please enter mobile number: \n')
+	txnId = otp.send_otp(int(mobile_number))
+
 	otp_recv = input('Please enter OTP: ')
 	token = otp.validate_otp(otp_recv, txnId)
+	if (token == ''):
+		sys.exit('Invalid OTP!')
+
+	district_codes = input('Please enter district range: \n')
+	pincodes = input('Please enter pincode range: \n')
+
+	bf = Beneficiaries()
+
+	district_codes = district_codes.split(' ')
+	district_codes = list(map(int,district_codes))
+
+	pincodes = pincodes.split(' ')
+	pincodes = list(map(int,pincodes))
+
+	ap = Appointment(pincodes[0], pincodes[1], pincodes[2])
+
+	sched = Schedule()
 
 	while (token):
-		bf = Beneficiaries()
 		num_44_or_less, num_45_or_more, bfs = bf.get_beneficiaries(token)
 
 		if (not bfs):
 			break
+		
+		slots = []
+		for d_code in district_codes:
+			slots.append(ap.find_slots(d_code))
 
-		ap = Appointment()
-		slots_1 = ap.find_slots(505)
-		slots_2 = ap.find_slots(506)
-		slots_comb = pd.concat([slots_1, slots_2])
+		slots_comb = pd.concat(slots)
 		slots_comb.drop_duplicates(inplace=True, ignore_index=True)
-		df = ap.find_suitable_slots(slots_comb, num_44_or_less, num_45_or_more, 302006, 302000, 302999)
 
-		sched = Schedule()
-		sched.book_vaccine(token, bfs, df)
+		df = ap.find_suitable_slots(slots_comb, num_44_or_less, num_45_or_more)
 
-		time.sleep(1)
+		if (len(df) > 0):
+			sched.book_vaccine(token, bfs, df)
+
+		time.sleep(3.5)
 
 
 
