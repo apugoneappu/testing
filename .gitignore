@@ -1,3 +1,4 @@
 __pycache__
-configs
+configs/*.json
 !configs/template.json
+.vscode
