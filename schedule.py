@@ -49,8 +49,6 @@ class Schedule():
 
 		self.headers['authorization'] = f'Bearer {token}'
 
-		self.payload['captcha'] = self.captcha.get(token)
-
 		for (dose, under_45), bf_group in bfs.groupby(['dose', 'under_45']):
 			
 			self.payload['beneficiaries'] = list(bf_group.id)
@@ -68,6 +66,10 @@ class Schedule():
 				self.payload["center_id"] = appointment['center_id']
 				self.payload["session_id"] = appointment['session_id']
 				self.payload["slot"] = appointment['time']
+				print('\a')
+				print('\a')
+				print('\a')
+				self.payload['captcha'] = self.captcha.get(token)
 
 				status = self.try_booking(self.payload, self.headers)
 
