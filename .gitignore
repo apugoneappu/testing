@@ -2,3 +2,4 @@ __pycache__
 configs/*.json
 !configs/template.json
 .vscode
+test.py
