@@ -3,3 +3,6 @@ configs/*.json
 !configs/template.json
 .vscode
 test.py
+build
+dist
+*.spec

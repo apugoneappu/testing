@@ -1,5 +1,4 @@
 import json
-import argparse
 import sys
 import time
 import pandas as pd
@@ -14,14 +13,9 @@ logger = logging.getLogger(__name__)
 FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
 logging.basicConfig(level=logging.INFO, format=FORMAT)
 
-parser = argparse.ArgumentParser(description="Vaccination booking script")
 
-#add the arguments
-parser.add_argument("--config", '-c', type=str, help="relative path of config file")
-args = parser.parse_args()
 
-with open(args.config) as f:
-  config = json.load(f)
+config = {}
 
 otp = OTP()
 txnId = otp.send_otp(config['mobile'])
