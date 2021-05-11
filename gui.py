@@ -228,7 +228,7 @@ class Appointment():
 		self.headers = {
 			'authority': 'cdn-api.co-vin.in',
 			'accept': 'application/json, text/plain, */*',
-			'authorization': f'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJkMDk5Y2I4OS05YWUxLTQ3YTEtOTEwMS1mNmFjNDRiMzViNzAiLCJ1c2VyX2lkIjoiZDA5OWNiODktOWFlMS00N2ExLTkxMDEtZjZhYzQ0YjM1YjcwIiwidXNlcl90eXBlIjoiQkVORUZJQ0lBUlkiLCJtb2JpbGVfbnVtYmVyIjo4MDAzMTE1MDYxLCJiZW5lZmljaWFyeV9yZWZlcmVuY2VfaWQiOjk1MjU0Nzc3NjA1NjkwLCJ1YSI6Ik1vemlsbGEvNS4wIChNYWNpbnRvc2g7IEludGVsIE1hYyBPUyBYIDExXzJfMykgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzg5LjAuNDM4OS4xMTQgU2FmYXJpLzUzNy4zNiIsImRhdGVfbW9kaWZpZWQiOiIyMDIxLTA1LTA2VDA2OjUwOjMwLjM2NVoiLCJpYXQiOjE2MjAyODM4MzAsImV4cCI6MTYyMDI4NDczMH0.pCO8s0JVQR5w4-1iGaDzwDnFmVBUK7ckN-LDs24M8xw',
+			'authorization': f'Bearer <AUTH_TOKEN_HERE>',
 			'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36',
 			'sec-gpc': '1',
 			'origin': 'https://selfregistration.cowin.gov.in',
@@ -842,7 +842,7 @@ class GUI():
 
 	def log(self, addition, level='DEBUG'):
 
-		self.text_output.insert(tk.END, f'{time.ctime()} | {level} | {addition} \n')
+		self.text_output.insert(tk.END, f'\n{time.ctime()} | {level} | {addition}')
 	
 	def state_selected_callback(self, event):
 
@@ -867,7 +867,7 @@ class GUI():
 			district_id = self.district_to_id[district_name]
 			self.district_ids.append(district_id)
 
-		print(self.district_ids)
+		self.log(f'Chosen district ids are {self.district_ids}', level='USER')
 
 	def submit_all(self):
 		
