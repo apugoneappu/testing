@@ -17,5 +17,7 @@ Example: names - `Raju Goyal, Meena Singh, Hima Nain`
 6. As soon as a vaccination appointment is available, a new window popup opens up to show a captcha image. To grab your attention quickly, BookMySlot will make a sound when the captcha is required.  
 <img src="https://user-images.githubusercontent.com/15952329/117894597-52669000-b2da-11eb-908b-5b1a6e95d90f.png" height="200">
 8. Enter the captcha and press `OK`
-9. A confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc.
+9. If the booking is successful, a confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc. 
+10. If the booking was unsuccessful for any reason (appointment slot filled before confirmation, incorrect captcha etc.), then BookMySlot will keep looking for more appointments.
+
 
