@@ -37,8 +37,14 @@ class CaptchaDialog(object):
 		self.entry_captcha = tk.Entry(master=self.frame_captcha, textvariable=self.captcha_str)
 		self.entry_captcha.grid(row=0, column=0, rowspan=1, columnspan=1)
 
-		self.button_captcha = tk.Button(master=self.frame_captcha, text='OK', command=self.toplevel.destroy)
-		self.button_captcha.grid(row=1, column=0, rowspan=1, columnspan=1)
+		self.frame_buttons = tk.Frame(master=self.frame_captcha)
+		self.frame_buttons.grid(row=1, column=0, rowspan=1, columnspan=1)
+
+		self.button_ok = tk.Button(master=self.frame_buttons, text='OK', command=self.toplevel.destroy)
+		self.button_ok.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+		self.button_quit = tk.Button(master=self.frame_buttons, text='Quit', command=window.destroy)
+		self.button_quit.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
 		# Image right
 		from PIL import ImageTk, Image
@@ -181,6 +187,7 @@ class Schedule():
 					)
 					
 					self.log(f'SCHEDULE.BOOK_VACCINE: {success_str}')
+					self.log(f'{success_str}', level='USER')
 					break
 
 	
@@ -775,6 +782,9 @@ class GUI():
 		self.frame_states = tk.Frame(master=self.frame_location)
 		self.frame_states.grid(row=0, column=0, sticky='news')
 
+		self.label_states = tk.Label(self.frame_states, text='Choose state')
+		self.label_states.pack(side=tk.TOP, anchor=tk.NW)
+
 		self.states_list = list(self.state_to_id)
 		self.states_str = tk.StringVar(value=self.states_list)
 		self.listbox_states = tk.Listbox(self.frame_states, listvariable=self.states_str, height=7)
@@ -788,6 +798,9 @@ class GUI():
 
 		self.frame_district = tk.Frame(master=self.frame_location)
 		self.frame_district.grid(row=0, column=1, sticky='news')
+
+		self.label_district = tk.Label(self.frame_district, text='Choose district(s) (hold control to select more than one)')
+		self.label_district.pack(side=tk.TOP, anchor=tk.NW)
 		
 		self.district_list = []
 		self.district_str = tk.StringVar(value=self.district_list)
@@ -871,21 +884,27 @@ class GUI():
 			state_name = self.states_list[idx]
 			state_id = self.state_to_id[state_name]
 
+			self.log(f'Chosen state is {state_name}', level='USER')
+
 			self.district_to_id = self.districts.get_districts(state_id)
 			self.district_list = list(self.district_to_id.keys())
 			self.district_str.set(self.district_list)
+
 
 	def districts_selected_callback(self, event):
 
 		district_idxs = event.widget.curselection()
 
 		self.district_ids = []
+		district_names = []
 		for idx in district_idxs:
 			district_name = self.district_list[idx]
 			district_id = self.district_to_id[district_name]
 			self.district_ids.append(district_id)
+			district_names.append(district_name)
 
-		self.log(f'Chosen district ids are {self.district_ids}', level='USER')
+		district_name_joined = ", ".join(district_names)
+		self.log(f'Chosen districts are {district_name_joined}', level='USER')
 
 	def submit_all(self):
 		
