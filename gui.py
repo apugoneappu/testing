@@ -6,9 +6,13 @@ from hashlib import sha256
 import os
 import sys
 from datetime import datetime
+import time
 import pandas as pd
 from cairosvg import svg2png
 import simpleaudio as sa
+from tkinter import messagebox
+
+TIME_PERIOD_MS = 3500
 
 def resource_path(relative_path):
 	 if hasattr(sys, '_MEIPASS'):
@@ -53,7 +57,9 @@ class CaptchaDialog(object):
 
 class Captcha():
 
-	def __init__(self) -> None:
+	def __init__(self, logFn) -> None:
+
+		self.log = logFn
 
 		self.url = "https://cdn-api.co-vin.in/api/v2/auth/getRecaptcha"
 
@@ -82,7 +88,7 @@ class Captcha():
 		status = response.status_code
 		if status == 200:
 			data = response.json().get('captcha', '')
-			msg = 'Successfully got captcha'
+			msg = 'Successfully fetched captcha from server'
 		elif status == 400:
 			data = ''
 			msg = response.json().get('error', '')
@@ -90,13 +96,15 @@ class Captcha():
 			data = ''
 			msg = response.raw
 
-		print(f'{status}: {msg}')
-
+		self.log(f'CAPTCHA.SAVE: {status}={msg}')
 		svg2png(bytestring=data, background_color='white', write_to='/tmp/output.png')
+		self.log(f'CAPTCHA.SAVE: Saved captcha image in /tmp/output.png')
 
 class Schedule():
 
-	def __init__(self) -> None:
+	def __init__(self, logFn) -> None:
+
+		self.log = logFn
 	
 		self.url = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 		self.payload = {
@@ -124,7 +132,9 @@ class Schedule():
 			'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
 		}
 
-		self.captcha = Captcha()
+		self.wave_obj = sa.WaveObject.from_wave_file(resource_path('sound.wav'))
+
+		self.captcha = Captcha(self.log)
 	
 	def book_vaccine(self, token, bfs: list, appointments: pd.DataFrame):
 
@@ -151,9 +161,9 @@ class Schedule():
 				self.payload["session_id"] = appointment['session_id']
 				self.payload["slot"] = appointment['time']
 
-				filename = 'sound.wav'
-				wave_obj = sa.WaveObject.from_wave_file(resource_path(filename))
-				play_obj = wave_obj.play()
+				# Make sound
+				play_obj = self.wave_obj.play()
+
 				self.captcha.save(token)
 				self.payload['captcha'] = CaptchaDialog().show()
 
@@ -163,7 +173,14 @@ class Schedule():
 					names_str = " | ".join(list(bf_group['name']))
 					appointment_date = appointment['date']
 					centre_name = appointment['name']
-					print(f'Vaccine booked on {appointment_date} at {centre_name} for: {names_str}!')
+					success_str = f'Vaccine booked on {appointment_date} at {centre_name} for: {names_str}!'
+
+					messagebox.showinfo(
+						title='Vaccine booked!', 
+						message=success_str
+					)
+					
+					self.log(f'SCHEDULE.BOOK_VACCINE: {success_str}')
 					break
 
 	
@@ -174,7 +191,7 @@ class Schedule():
 		status = response.status_code
 		if (status == 200):
 			data = response.json().get('appointment_id', '')
-			msg = f'Appointment id: {data}'
+			msg = f'Appointment ID is {data}'
 			ret = 0
 		elif status == 400:
 			data = ''
@@ -185,15 +202,17 @@ class Schedule():
 			msg = response.raw
 			ret = -1
 		
-		print(msg)
+		self.log(f'SCHEDULE.TRY_BOOKING: {status}={msg}')
 		
 		return ret
 
 
 class Appointment():
 
-	def __init__(self, pincode_from, my_pincode, pincode_to) -> None:
+	def __init__(self, logFn, pincode_from, my_pincode, pincode_to) -> None:
 
+		self.log = logFn
+		
 		self.slots = pd.DataFrame()
 
 		self.pincode_from = int(pincode_from)
@@ -244,7 +263,7 @@ class Appointment():
 			centers = []
 			msg = response.raw
 		
-		print(msg)
+		self.log(f'APPOINTMENT.FIND_SLOTS: {status}={msg}')
 
 		slots_list = []
 		for centre in centers:
@@ -315,7 +334,9 @@ def get_age(birth_year: int) -> int:
 
 class Beneficiaries():
 
-	def __init__(self, names: list = []) -> None:
+	def __init__(self, logFn, names: list = []) -> None:
+
+		self.log = logFn
 
 		self.url = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
 
@@ -369,7 +390,7 @@ class Beneficiaries():
 		status = response.status_code
 		if (status == 200):
 			bf_list_fetched = response.json().get('beneficiaries', '')
-			msg = f'Found {len(bf_list_fetched)} beneficiaries'
+			msg = f'Total {len(bf_list_fetched)} beneficiaries, of which valid are '
 		elif status == 400:
 			bf_list_fetched = []
 			msg = response.json().get('error', '')
@@ -408,15 +429,20 @@ class Beneficiaries():
 				'dose': bf_new_dose_number,
 				'under_45': bf_age < 45
 			})
-		valid_names = (" | ").join([b['name'] for b in bf_list_constructed])
-		msg = f'Valid beneficiaries: {valid_names}'
-		print(msg)
 		
+		# works even when no beneficiaries
+		if (status == 200):
+			msg += (" | ").join([b['name'] for b in bf_list_constructed])
+			
+		self.log(f'BENEFICIARIES.GET_BENEFICIARIES: {status}={msg}')
+
 		return num_44_or_less, num_45_or_more, pd.DataFrame(bf_list_constructed)
 
 
 class States():
-	def __init__(self) -> None:
+	def __init__(self, logFn) -> None:
+
+		self.log = logFn
 
 		self.url = "https://cdn-api.co-vin.in/api/v2/admin/location/states"
 		self.payload={}
@@ -450,7 +476,7 @@ class States():
 
 		if status == 200:
 			data = response.json().get('states', '')
-			msg = f'Found {len(data)} states'
+			msg = f'Total {len(data)} states'
 		elif status == 400:
 			data = ''
 			msg = response.json().get('error', '')
@@ -458,7 +484,7 @@ class States():
 			data = ''
 			msg = response.raw
 
-		print(f'{status}: {msg}')
+		self.log(f'STATES.GET_STATES: {status}={msg}')
 		
 		state_to_id_dict = self.get_states_to_ids(data)
 		return state_to_id_dict
@@ -466,7 +492,9 @@ class States():
 
 class Districts():
 
-	def __init__(self) -> None:
+	def __init__(self, logFn) -> None:
+
+		self.log = logFn
 
 		self.url = "https://cdn-api.co-vin.in/api/v2/admin/location/districts/%d"
 
@@ -502,7 +530,7 @@ class Districts():
 
 		if status == 200:
 			data = response.json().get('districts', '')
-			msg = f'Found {len(data)} districts'
+			msg = f'Total {len(data)} districts in chosen state'
 		elif status == 400:
 			data = ''
 			msg = response.json().get('error', '')
@@ -510,14 +538,16 @@ class Districts():
 			data = ''
 			msg = response.raw
 
-		print(f'{status}: {msg}')
+		self.log(f'DISTRICTS.GET_DISTRICTS: {status}={msg}')
 
 		district_to_id_dict = self.get_districts_to_ids(data)
 		return district_to_id_dict
 
 
 class OTP():
-	def __init__(self) -> None:
+	def __init__(self, logFn) -> None:
+
+		self.log = logFn
 
 		self.send_url = "https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP"
 		self.send_payload = {
@@ -567,7 +597,7 @@ class OTP():
 
 		if status == 200:
 			data = response.json().get('txnId', '')
-			msg = data
+			msg = f'txnID is {data}'
 		elif status == 400:
 			data = ''
 			msg = response.json().get('error', '')
@@ -575,7 +605,7 @@ class OTP():
 			data = ''
 			msg = response.raw
 
-		print(f'{status}: {msg}')
+		self.log(f'OTP.SEND_OTP: {status}={msg}')
 		return data
 
 	def validate_otp(self, otp: str, txnId: str) -> str:
@@ -589,7 +619,7 @@ class OTP():
 
 		if status == 200:
 			data = response.json().get('token', '')
-			msg = data
+			msg = f'token is {data}'
 		elif status == 400:
 			data = ''
 			msg = response.json().get('error', '')
@@ -597,7 +627,7 @@ class OTP():
 			data = ''
 			msg = response.raw
 
-		print(f'{status}: {msg}')
+		self.log(f'OTP.VALIDATE_OTP: {status}={msg}')
 		return data
 
 
@@ -606,9 +636,6 @@ class GUI():
 
 	def __init__(self) -> None:
 
-		self.otp_obj = OTP()
-		self.state_to_id = States().get_states()
-		self.districts = Districts()
 		self.logs = ''
 
 		self.window = window
@@ -619,6 +646,31 @@ class GUI():
 		self.window.rowconfigure([0,1,2,3,4,5,6,7], weight=1)
 		self.window.rowconfigure(8, weight=2)
 		self.window.columnconfigure(0, weight=1)
+
+		######### MOVING OUTPUT TO TOP ##########
+		################ Output #################
+		self.frame_output = tk.Frame(master=self.window)
+		self.frame_output.grid(row=8, column=0, sticky='new')
+
+		self.frame_output.rowconfigure(0, weight=1)
+		self.frame_output.rowconfigure(1, weight=10)
+		self.frame_output.columnconfigure(0, weight=10)
+
+		self.label_output = tk.Label(master=self.frame_output, text='Output logs', bg='red')
+		self.label_output.grid(row=0, column=0)
+
+		# source - https://stackoverflow.com/questions/30669015/autoscroll-of-text-and-scrollbar-in-python-text-box
+		self.text_output = tk.Text(self.frame_output)
+		self.sb_output = tk.Scrollbar(self.text_output, orient='vertical', command=self.text_output.yview)
+		self.text_output.configure(yscrollcommand=self.sb_output.set)
+		self.sb_output.grid(sticky='nes')
+		self.text_output.grid(sticky='news')
+		# self.add_timestamp()
+
+		######### MOVING OUTPUT TO TOP ##########
+		self.otp_obj = OTP(self.log)
+		self.state_to_id = States(self.log).get_states()
+		self.districts = Districts(self.log)
 
 		################ APP NAME #################
 
@@ -644,8 +696,7 @@ class GUI():
 		self.label_mobile = tk.Label(master=self.frame_mobile , text='Mobile number')
 		self.label_mobile.grid(row=0, column=0, sticky='news')
 
-		self.entry_mobile = tk.Entry(master=self.frame_mobile, validate='focusout')
-		self.entry_mobile['validatecommand'] = (self.entry_mobile.register(self.check_number_format), '%P')
+		self.entry_mobile = tk.Entry(master=self.frame_mobile)
 		self.entry_mobile.grid(row=0, column=1, sticky='news')
 
 		self.button_mobile = tk.Button(master=self.frame_mobile, text='Get OTP', command=self.get_otp_callback)
@@ -678,7 +729,8 @@ class GUI():
 		self.label_pincode_from = tk.Label(master=self.frame_pincode , text='Pincode from')
 		self.label_pincode_from.grid(row=0, column=0, sticky='news')
 
-		self.entry_pincode_from = tk.Entry(master=self.frame_pincode)
+		pincode_from_init = tk.StringVar(value='000000')
+		self.entry_pincode_from = tk.Entry(master=self.frame_pincode, textvariable=pincode_from_init)
 		self.entry_pincode_from.grid(row=0, column=1, sticky='news')
 
 		self.label_pincode = tk.Label(master=self.frame_pincode, text='Pincode')
@@ -690,7 +742,8 @@ class GUI():
 		self.label_pincode_to = tk.Label(master=self.frame_pincode , text='Pincode to')
 		self.label_pincode_to.grid(row=0, column=4, sticky='news')
 
-		self.entry_pincode_to = tk.Entry(master=self.frame_pincode)
+		pincode_to_init = tk.StringVar(value='999999')
+		self.entry_pincode_to = tk.Entry(master=self.frame_pincode, textvariable=pincode_to_init)
 		self.entry_pincode_to.grid(row=0, column=5, sticky='news')
 
 		################ Names #################
@@ -702,7 +755,7 @@ class GUI():
 		self.frame_names.columnconfigure(0, weight=2) #label
 		self.frame_names.columnconfigure(1, weight=7) #entry
 
-		self.label_names = tk.Label(master=self.frame_names , text='Enter names (comma separated)')
+		self.label_names = tk.Label(master=self.frame_names , text='(Optional) Enter names (comma separated)')
 		self.label_names.grid(row=0, column=0, sticky='news')
 
 		self.entry_names = tk.Entry(master=self.frame_names)
@@ -737,46 +790,59 @@ class GUI():
 		self.button_submit.rowconfigure(0, weight=1)
 		self.button_submit.columnconfigure(0, weight=1) 
 
-		################ Output #################
-		self.frame_output = tk.Frame(master=self.window)
-		self.frame_output.grid(row=8, column=0, sticky='new')
 
-		self.frame_output.rowconfigure(0, weight=1)
-		self.frame_output.rowconfigure(1, weight=10)
-		self.frame_output.columnconfigure(0, weight=10)
+	def add_timestamp(self):
+		self.text_output.insert("end", time.ctime() + "\n")
+		self.text_output.see("end")
+		self.window.after(1000, self.add_timestamp)	
 
-		self.label_output = tk.Label(master=self.frame_output, text='Output logs', bg='red')
-		self.label_output.grid(row=0, column=0)
-
-		self.logs = tk.StringVar()
-		self.label_output = tk.Label(master=self.frame_output, text='', bg='blue')
-		self.label_output['textvariable'] = self.logs
-		self.label_output.grid(row=1, column=0)
 	
-	def check_number_format(self, input_str: str):
-
-		white_removed = input_str.replace(' ', '')
-		ret = len(white_removed) == 10 and white_removed.isdecimal()
+	def is_number_correct(self, element, length, msg_keyword):
+		
+		input_str: str = element.get()
+		ret = len(input_str) == length and input_str.isdecimal()
 		if ret:
-			self.entry_mobile.configure(background='green')
-			self.button_mobile['state'] = 'normal'
+			element.configure(background='pale green')
 		else:
-			self.entry_mobile.configure(background='red')
-			self.button_mobile['state'] = 'disabled'
-		print(ret)
+			element.configure(background='salmon')
+			messagebox.showwarning(
+				f'Incorrect format of {msg_keyword}',
+				f'Please enter a {length}-digit {msg_keyword}'
+			)
 		return ret
+
+	def is_names_correct(self, names_list: list):
+
+		if names_list:
+			print_str = "\n".join(names_list)
+			messagebox.showinfo(title='Entered names', 
+				message=f'The entered names should have exact names registered on Cowin:\n {print_str}'
+			)
+	
+	def valid_token(self, token):
+
+		if not token:
+			self.entry_otp.configure(background='salmon')
+			messagebox.showerror(title='The entered OTP is incorrect', 
+				message=f'The entered OTP is incorrect. Please get a new OTP code by clicking Get OTP.'
+			)
+			return False
+		else:
+			self.entry_otp.configure(background='pale green')
+			return True
 	
 	def get_otp_callback(self):
 
 		mobile = self.entry_mobile.get()
+		if not self.is_number_correct(self.entry_mobile, 10, 'mobile number'):
+			return
 		mobile = int(mobile)
 
 		self.tnxId = self.otp_obj.send_otp(mobile)
-		self.log(f'OTP generated: tnxId={self.tnxId}')
 
-	def log(self, addition):
+	def log(self, addition, level='DEBUG'):
 
-		self.logs.set(self.logs.get() + '\n' + addition)
+		self.text_output.insert(tk.END, f'{time.ctime()} | {level} | {addition} \n')
 	
 	def state_selected_callback(self, event):
 
@@ -805,26 +871,43 @@ class GUI():
 
 	def submit_all(self):
 		
-		self.otp = self.entry_otp.get()
-		self.token = self.otp_obj.validate_otp(self.otp, self.tnxId)
-		self.pincode_from = self.entry_pincode_from.get()
-		self.pincode = self.entry_pincode.get()
-		self.pincode_to = self.entry_pincode_to.get()
+		if not self.is_number_correct(self.entry_mobile, 10, 'Mobile Number'):
+			return
+
+		if not self.is_number_correct(self.entry_otp, 6, 'OTP Code'):
+			return
+
+		if not self.is_number_correct(self.entry_pincode_from, 6, 'Pincode From'):
+			return
+
+		if not self.is_number_correct(self.entry_pincode, 6, 'Pincode'):
+			return
+
+		if not self.is_number_correct(self.entry_pincode_to, 6, 'Pincode To'):
+			return
+
 		self.names = self.entry_names.get()
 		if self.names:
 			self.names = self.names.split(',')
 			self.names = [n.lstrip(' ').rstrip(' ') for n in self.names]
+			self.is_names_correct(self.names)
 
-		self.log(self.tnxId)
-		self.log(self.token)
-		self.log(self.otp)
-		self.log(f'{self.pincode_from} {self.pincode} {self.pincode_to}')
-		self.log(f"[{','.join(self.names)}]")
+		self.otp = self.entry_otp.get()
+		self.token = self.otp_obj.validate_otp(self.otp, self.tnxId)
+		if not self.valid_token(self.token):
+			return 
 
-		self.beneficiaries = Beneficiaries(self.names)
-		self.appointment = Appointment(self.pincode_from, self.pincode, self.pincode_to)
-		self.schedule = Schedule()
+		self.pincode_from = self.entry_pincode_from.get()
+		self.pincode = self.entry_pincode.get()
+		self.pincode_to = self.entry_pincode_to.get()
 
+		self.log('Inputs received', level='USER')
+
+		self.beneficiaries = Beneficiaries(self.log, self.names)
+		self.appointment = Appointment(self.log, self.pincode_from, self.pincode, self.pincode_to)
+		self.schedule = Schedule(self.log)
+
+		self.log(f'Starting! I will try to book slots once every {TIME_PERIOD_MS/1000} seconds', level='USER')
 		self.loop()
 
 	def loop(self):
@@ -832,6 +915,7 @@ class GUI():
 		num_44_or_less, num_45_or_more, bfs = self.beneficiaries.get_beneficiaries(self.token)
 
 		if len(bfs) == 0:
+			self.log('No valid beneficiaries, stopping', level='USER')
 			return
 		
 		slots = []
@@ -846,7 +930,7 @@ class GUI():
 		self.schedule.book_vaccine(self.token, bfs, appointments)
 
 		# source - https://stackoverflow.com/questions/2400262/how-to-create-a-timer-using-tkinter
-		self.window.after(3500, self.loop)
+		self.window.after(TIME_PERIOD_MS, self.loop)
 
 
 
