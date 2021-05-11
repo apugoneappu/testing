@@ -152,7 +152,7 @@ class Schedule():
 				self.payload["slot"] = appointment['time']
 
 				filename = 'sound.wav'
-				wave_obj = sa.WaveObject.from_wave_file(filename)
+				wave_obj = sa.WaveObject.from_wave_file(resource_path(filename))
 				play_obj = wave_obj.play()
 				self.captcha.save(token)
 				self.payload['captcha'] = CaptchaDialog().show()
@@ -772,7 +772,7 @@ class GUI():
 		mobile = int(mobile)
 
 		self.tnxId = self.otp_obj.send_otp(mobile)
-		self.log(f'tnxId: {self.tnxId}')
+		self.log(f'OTP generated: tnxId={self.tnxId}')
 
 	def log(self, addition):
 
