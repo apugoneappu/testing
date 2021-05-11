@@ -643,29 +643,31 @@ class GUI():
 
 		self.window.geometry("700x500")
 
-		self.window.rowconfigure([0,1,2,3,4,5,6,7], weight=1)
-		self.window.rowconfigure(8, weight=2)
+		self.window.rowconfigure(5, weight=1)
+		self.window.rowconfigure(7, weight=10)
 		self.window.columnconfigure(0, weight=1)
 
 		######### MOVING OUTPUT TO TOP ##########
 		################ Output #################
 		self.frame_output = tk.Frame(master=self.window)
-		self.frame_output.grid(row=8, column=0, sticky='new')
+		self.frame_output.grid(row=7, column=0, sticky='news')
 
-		self.frame_output.rowconfigure(0, weight=1)
-		self.frame_output.rowconfigure(1, weight=10)
+		self.frame_output.rowconfigure(0, weight=0, minsize=10)
+		self.frame_output.rowconfigure(1, weight=1, minsize=50)
 		self.frame_output.columnconfigure(0, weight=10)
 
-		self.label_output = tk.Label(master=self.frame_output, text='Output logs', bg='red')
-		self.label_output.grid(row=0, column=0)
+		self.label_output = tk.Label(master=self.frame_output, text='Output logs:')
+		self.label_output.grid(row=0, column=0, sticky='nw')
 
 		# source - https://stackoverflow.com/questions/30669015/autoscroll-of-text-and-scrollbar-in-python-text-box
-		self.text_output = tk.Text(self.frame_output)
-		self.sb_output = tk.Scrollbar(self.text_output, orient='vertical', command=self.text_output.yview)
+		self.frame_right = tk.Frame(master=self.frame_output)
+		self.frame_right.grid(row=1, column=0, sticky='news')
+
+		self.text_output = tk.Text(self.frame_right)
+		self.sb_output = tk.Scrollbar(master=self.frame_right, orient='vertical', command=self.text_output.yview)
 		self.text_output.configure(yscrollcommand=self.sb_output.set)
-		self.sb_output.grid(sticky='nes')
-		self.text_output.grid(sticky='news')
-		# self.add_timestamp()
+		self.sb_output.pack(fill=tk.Y, side=tk.RIGHT)
+		self.text_output.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
 		######### MOVING OUTPUT TO TOP ##########
 		self.otp_obj = OTP(self.log)
@@ -770,17 +772,33 @@ class GUI():
 		self.frame_location.columnconfigure(0, weight=1) #state
 		self.frame_location.columnconfigure(1, weight=1) #districts
 
+		self.frame_states = tk.Frame(master=self.frame_location)
+		self.frame_states.grid(row=0, column=0, sticky='news')
+
 		self.states_list = list(self.state_to_id)
 		self.states_str = tk.StringVar(value=self.states_list)
-		self.listbox_states = tk.Listbox(self.frame_location, listvariable=self.states_str, height=5)
-		self.listbox_states.grid(row=0, column=0, sticky='news')
+		self.listbox_states = tk.Listbox(self.frame_states, listvariable=self.states_str, height=7)
+		self.listbox_states.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 		self.listbox_states.bind("<<ListboxSelect>>", self.state_selected_callback)
+		self.sb_states = tk.Scrollbar(master=self.frame_states, orient='vertical', command=self.
+		listbox_states.yview)
+		self.listbox_states.configure(yscrollcommand=self.sb_states.set)
+		self.sb_states.pack(side=tk.RIGHT, fill=tk.Y)
 
+
+		self.frame_district = tk.Frame(master=self.frame_location)
+		self.frame_district.grid(row=0, column=1, sticky='news')
+		
 		self.district_list = []
 		self.district_str = tk.StringVar(value=self.district_list)
-		self.listbox_district = tk.Listbox(self.frame_location, listvariable=self.district_str, height=5, selectmode=EXTENDED)
-		self.listbox_district.grid(row=0, column=1, sticky='news')
+		self.listbox_district = tk.Listbox(self.frame_district, listvariable=self.district_str, height=7, selectmode=EXTENDED)
+		self.listbox_district.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 		self.listbox_district.bind("<<ListboxSelect>>", self.districts_selected_callback)
+		self.sb_district = tk.Scrollbar(master=self.frame_district, orient='vertical', command=self.
+		listbox_district.yview)
+		self.listbox_district.configure(yscrollcommand=self.sb_district.set)
+		self.sb_district.pack(side=tk.RIGHT, fill=tk.Y)
+
 
 		################ Submit everything #################
 
