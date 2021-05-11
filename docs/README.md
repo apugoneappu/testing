@@ -1,4 +1,9 @@
-# Automatic Covid Vaccine Booking
+<body>
+    <section class="page-header">
+      <h1 class="project-name">BookMySlot: Automatic Covid Vaccine Appointment Booking</h1>
+    </section>
+</body>
+
 BookMySlot is a simple app to book appointments for the Covid-19 vaccine in India. 
 
 ## Supported platforms
