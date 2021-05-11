@@ -5,5 +5,4 @@ configs/*.json
 test.py
 build
 dist
-*.spec
 .DS_Store
