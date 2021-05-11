@@ -1,5 +1,8 @@
 # Automatic Covid Vaccine Booking
-BookMySlot is a simple app to book appointments for the Covid-19 vaccine in India.
+BookMySlot is a simple app to book appointments for the Covid-19 vaccine in India. 
+
+## Supported platforms
+macOS
 
 ## How to use
 
@@ -20,4 +23,6 @@ Example: names - `Raju Goyal, Meena Singh, Hima Nain`
 9. If the booking is successful, a confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc. 
 10. If the booking was unsuccessful for any reason (appointment slot filled before confirmation, incorrect captcha etc.), then BookMySlot will keep looking for more appointments.
 
+## Development
 
+Hi, my name is Apoorve Singhal. I made BookMySlot to automate the vaccine booking process for my family who were unable to book a slot due to their lack of proficiency with technology. I hope it will be helpful to many other folks and gives them a chance to get vaccinated.
