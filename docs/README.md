@@ -14,7 +14,8 @@ Example: pincode_from - `556145`, pincode - `556150`, pincode_from - `556155`
 4. (Optional) If you wish to book a slot for only some of the beneficiaries registered on CoWIN, enter their names here. If empty, BookMySlot will try to book for all valid beneficiaries registered on CoWIN.
 Example: names - `Raju Goyal, Meena Singh, Hima Nain`
 5. Click Submit
-6. As soon as a vaccination appointment is available, a new window popup opens up to show a captcha image. To grab your attention quickly, BookMySlot will make a sound when the captcha is required.  <img src="https://user-images.githubusercontent.com/15952329/117894597-52669000-b2da-11eb-908b-5b1a6e95d90f.png" height="200">
-7. Enter the captcha and press `OK`
-8. A confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc.
+6. As soon as a vaccination appointment is available, a new window popup opens up to show a captcha image. To grab your attention quickly, BookMySlot will make a sound when the captcha is required.  
+<img src="https://user-images.githubusercontent.com/15952329/117894597-52669000-b2da-11eb-908b-5b1a6e95d90f.png" height="200">
+8. Enter the captcha and press `OK`
+9. A confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc.
 
