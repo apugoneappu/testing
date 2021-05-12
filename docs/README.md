@@ -1,4 +1,4 @@
-<img width="812" alt="Screenshot 2021-05-12 at 4 14 52 AM" src="https://user-images.githubusercontent.com/15952329/117893738-9c4e7680-b2d8-11eb-98be-fa79fa24f5fd.png">
+<img width="812" alt="app screenshot" src="https://user-images.githubusercontent.com/15952329/117893738-9c4e7680-b2d8-11eb-98be-fa79fa24f5fd.png">
 
 ## Supported platforms
 macOS
