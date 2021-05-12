@@ -1,1 +1,1 @@
-pyinstaller gui.py --onefile --windowed --add-data 'sound.wav:.' --additional-hooks-dir './hooks' --hiddenimport 'cairosvg' --hiddenimport 'cairocffi'
+pyinstaller gui.py --windowed --add-data 'sound.wav:.' --additional-hooks-dir './hooks' --hiddenimport 'cairosvg' --hiddenimport 'cairocffi' -y -n 'Book My Slot'
