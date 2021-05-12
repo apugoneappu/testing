@@ -16,15 +16,9 @@ Example: names - `Raju Goyal, Meena Singh, Hima Nain`
 5. Select your state from the list of states.
 6. Select your district(s) from the list of districts. To select more than one district, hold the control key while clicking them.
 7. Click `Submit`
-8. As soon as a vaccination appointment is available, a new window popup opens up to show a captcha image. To grab your attention quickly, BookMySlot will make a sound when the captcha is required.  
-<p align="center">
-  <img align='center' src="https://user-images.githubusercontent.com/15952329/117894597-52669000-b2da-11eb-908b-5b1a6e95d90f.png" height="200">
-</p>
-9. Enter the captcha and press `OK`.  
-10. If the booking is successful, a confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc.  
-<p align="center">
-  <img width="372" alt="Screenshot 2021-05-12 at 5 37 44 AM" src="https://user-images.githubusercontent.com/15952329/117899446-c312aa00-b2e4-11eb-8442-28a2daf5b8d9.png">
-</p>
+8. As soon as a vaccination appointment is available, a new window popup opens up to show a captcha image. To grab your attention quickly, BookMySlot will make a sound when the captcha is required.   <img src="https://user-images.githubusercontent.com/15952329/117894597-52669000-b2da-11eb-908b-5b1a6e95d90f.png" height="200">
+9. Enter the captcha and press `OK`.     
+10. If the booking is successful, a confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc.   <img width="372" alt="Screenshot 2021-05-12 at 5 37 44 AM" src="https://user-images.githubusercontent.com/15952329/117899446-c312aa00-b2e4-11eb-8442-28a2daf5b8d9.png">
 11. If the booking was unsuccessful for any reason (appointment slot filled before confirmation, incorrect captcha etc.), then BookMySlot will keep looking for more appointments.
 
 ## Making
