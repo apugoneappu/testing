@@ -26,6 +26,9 @@ class CaptchaDialog(object):
 	def __init__(self):
 		self.toplevel = tk.Toplevel(window)
 
+		self.toplevel.rowconfigure(0, weight=1)
+		self.toplevel.columnconfigure(0, weight=1)
+
 		self.frame_captcha = tk.Frame(master=self.toplevel)
 		self.frame_captcha.grid(row=0, column=0, sticky='news')
 
@@ -35,21 +38,19 @@ class CaptchaDialog(object):
 
 		self.captcha_str = tk.StringVar()
 		self.entry_captcha = tk.Entry(master=self.frame_captcha, textvariable=self.captcha_str)
-		self.entry_captcha.grid(row=0, column=0, rowspan=1, columnspan=1)
+		self.entry_captcha.grid(row=0, column=0, rowspan=1, columnspan=1, sticky='news')
 
 		self.frame_buttons = tk.Frame(master=self.frame_captcha)
-		self.frame_buttons.grid(row=1, column=0, rowspan=1, columnspan=1)
+		self.frame_buttons.grid(row=1, column=0, rowspan=1, columnspan=1, sticky='news')
 
 		self.button_ok = tk.Button(master=self.frame_buttons, text='OK', command=self.toplevel.destroy)
 		self.button_ok.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-		self.button_quit = tk.Button(master=self.frame_buttons, text='Quit', command=window.destroy)
-		self.button_quit.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+		self.button_cancel = tk.Button(master=self.frame_buttons, text='Cancel', command=self.toplevel.destroy)
+		self.button_cancel.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
 		# Image right
-		from PIL import ImageTk, Image
-		load = Image.open(resource_path("/tmp/output.png"))
-		self.img = ImageTk.PhotoImage(load)
+		self.img = tk.PhotoImage("captcha.png")
 		self.label_image = tk.Label(master=self.frame_captcha, image=self.img)
 		self.label_image.image = self.img
 		self.label_image.grid(row=0, column=1, sticky='news', rowspan=2, columnspan=1)
@@ -103,8 +104,8 @@ class Captcha():
 			msg = response.raw
 
 		self.log(f'CAPTCHA.SAVE: {status}={msg}')
-		svg2png(bytestring=data, background_color='white', write_to='/tmp/output.png')
-		self.log(f'CAPTCHA.SAVE: Saved captcha image in /tmp/output.png')
+		svg2png(bytestring=data, background_color='white', write_to='captcha.png')
+		self.log(f'CAPTCHA.SAVE: Saved captcha image in captcha.png')
 
 class Schedule():
 
@@ -815,17 +816,15 @@ class GUI():
 
 		################ Submit everything #################
 
-		self.button_submit = tk.Button(master=self.window, text='Submit', command=self.submit_all)
-		self.button_submit.grid(row=6, column=0, sticky='news')
+		self.frame_button_row = tk.Frame(self.window)
+		self.frame_button_row.grid(row=6, column=0, sticky='news')
 
-		self.button_submit.rowconfigure(0, weight=1)
-		self.button_submit.columnconfigure(0, weight=1) 
+		self.button_submit = tk.Button(master=self.frame_button_row, text='Start', command=self.submit_all)
+		self.button_submit.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
-
-	def add_timestamp(self):
-		self.text_output.insert("end", time.ctime() + "\n")
-		self.text_output.see("end")
-		self.window.after(1000, self.add_timestamp)	
+		self.button_stop = tk.Button(master=self.frame_button_row, text='Stop', command=self.stop)
+		self.button_stop.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+		self.is_stop = False
 
 	
 	def is_number_correct(self, element, length, msg_keyword):
@@ -874,6 +873,7 @@ class GUI():
 	def log(self, addition, level='DEBUG'):
 
 		self.text_output.insert(tk.END, f'\n{time.ctime()} | {level} | {addition}')
+		self.text_output.see(tk.END)
 	
 	def state_selected_callback(self, event):
 
@@ -906,7 +906,14 @@ class GUI():
 		district_name_joined = ", ".join(district_names)
 		self.log(f'Chosen districts are {district_name_joined}', level='USER')
 
+	def stop(self):
+
+		self.is_stop = True
+		self.log('Stopping search!', level='USER')
+
 	def submit_all(self):
+
+		self.is_stop = False
 		
 		if not self.is_number_correct(self.entry_mobile, 10, 'Mobile Number'):
 			return
@@ -948,6 +955,9 @@ class GUI():
 		self.loop()
 
 	def loop(self):
+
+		if self.is_stop:
+			return
 
 		num_44_or_less, num_45_or_more, bfs = self.beneficiaries.get_beneficiaries(self.token)
 
