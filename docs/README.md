@@ -10,7 +10,7 @@ Example: mobile number - `9876543210`
 2. Enter the received OTP (6 digits)  
 Example: OTP - `123456`
 3. Enter the range of pincodes that you would like to book a vaccination centre in. In case of multiple available centres, the middle pincode is used to book the closest centre.  
-Example: pincode_from - `556145`, pincode - `556150`, pincode_from - `556155`
+Example: pincode_from - `556145`, pincode - `556150`, pincode_to - `556155`
 4. (Optional) If you wish to book a slot for only some of the beneficiaries registered on CoWIN, enter their names here. If empty, BookMySlot will try to book for all valid beneficiaries registered on CoWIN.
 Example: names - `Raju Goyal, Meena Singh, Hima Nain`
 5. Click `Submit`
