@@ -1,17 +1,9 @@
-<body>
-    <section class="page-header">
-      <h1 class="project-name">BookMySlot: Automatic Covid Vaccine Appointment Booking</h1>
-    </section>
-</body>
-
-BookMySlot is a simple app to book appointments for the Covid-19 vaccine in India. 
+<img width="812" alt="Screenshot 2021-05-12 at 4 14 52 AM" src="https://user-images.githubusercontent.com/15952329/117893738-9c4e7680-b2d8-11eb-98be-fa79fa24f5fd.png">
 
 ## Supported platforms
 macOS
 
 ## How to use
-
-<img width="812" alt="Screenshot 2021-05-12 at 4 14 52 AM" src="https://user-images.githubusercontent.com/15952329/117893738-9c4e7680-b2d8-11eb-98be-fa79fa24f5fd.png">
 
 1. Enter your mobile number and click the `Get OTP` button.  
 Example: mobile number - `9876543210`
@@ -28,6 +20,6 @@ Example: names - `Raju Goyal, Meena Singh, Hima Nain`
 9. If the booking is successful, a confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc. 
 10. If the booking was unsuccessful for any reason (appointment slot filled before confirmation, incorrect captcha etc.), then BookMySlot will keep looking for more appointments.
 
-## Development
+## Making
 
-Hi, my name is Apoorve Singhal. I made BookMySlot to automate the vaccine booking process for my family who were unable to book a slot due to their lack of proficiency with technology. I hope it will be helpful to many other folks and gives them a chance to get vaccinated.
+Hi, my name is Apoorve Singhal. I made BookMySlot to automate the vaccine booking process for my family who were unable to book a slot due to their lack of proficiency with technology. I hope it will be helpful to other folks and gives them a chance to get vaccinated.
