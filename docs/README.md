@@ -1,7 +1,6 @@
 <img width="812" alt="Screenshot 2021-05-13 at 7 40 59 AM" src="https://user-images.githubusercontent.com/15952329/118070514-af8a4080-b3c3-11eb-8f13-cf50533f167c.png">
 
 ## Supported platforms
-<a href="https://drive.google.com/file/d/11bG1EuDvEjHdzWcV2TNiBkhj54bSFGJW/view?usp=sharing" class="btn">Download for macOS</a>
 macOS, Windows
 
 ## How to use
