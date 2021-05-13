@@ -1,8 +1,8 @@
 <img width="812" alt="Screenshot 2021-05-13 at 7 40 59 AM" src="https://user-images.githubusercontent.com/15952329/118070514-af8a4080-b3c3-11eb-8f13-cf50533f167c.png">
 
 ## Supported platforms
-[Download for macOS](https://easyupload.io/d0ks74)  
-[Download for Windows](https://easyupload.io/tn0w12)
+[Click here to download for macOS](https://easyupload.io/d0ks74)  
+[Click here to download for Windows](https://easyupload.io/tn0w12)
 
 After downloading the .rar file, uncompress it and click on Book My Slot app.  
 
