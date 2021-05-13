@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter.constants import EXTENDED
 import requests
 import json
 from hashlib import sha256
@@ -11,6 +10,7 @@ import pandas as pd
 from cairosvg import svg2png
 import simpleaudio as sa
 from tkinter import messagebox
+from PIL import Image, ImageTk
 
 TIME_PERIOD_MS = 3500
 
@@ -50,7 +50,8 @@ class CaptchaDialog(object):
 		self.button_cancel.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
 		# Image right
-		self.img = tk.PhotoImage("captcha.png")
+		loaded_img = Image.open(resource_path('captcha.png'))
+		self.img = ImageTk.PhotoImage(loaded_img)
 		self.label_image = tk.Label(master=self.frame_captcha, image=self.img)
 		self.label_image.image = self.img
 		self.label_image.grid(row=0, column=1, sticky='news', rowspan=2, columnspan=1)
@@ -104,7 +105,7 @@ class Captcha():
 			msg = response.raw
 
 		self.log(f'CAPTCHA.SAVE: {status}={msg}')
-		svg2png(bytestring=data, background_color='white', write_to='captcha.png')
+		svg2png(bytestring=data, background_color='white', write_to=resource_path('captcha.png'))
 		self.log(f'CAPTCHA.SAVE: Saved captcha image in captcha.png')
 
 class Schedule():
@@ -805,7 +806,7 @@ class GUI():
 		
 		self.district_list = []
 		self.district_str = tk.StringVar(value=self.district_list)
-		self.listbox_district = tk.Listbox(self.frame_district, listvariable=self.district_str, height=7, selectmode=EXTENDED)
+		self.listbox_district = tk.Listbox(self.frame_district, listvariable=self.district_str, height=7, selectmode=tk.EXTENDED)
 		self.listbox_district.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 		self.listbox_district.bind("<<ListboxSelect>>", self.districts_selected_callback)
 		self.sb_district = tk.Scrollbar(master=self.frame_district, orient='vertical', command=self.
