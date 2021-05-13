@@ -7,10 +7,12 @@ import sys
 from datetime import datetime
 import time
 import pandas as pd
-from cairosvg import svg2png
 import simpleaudio as sa
 from tkinter import messagebox
 from PIL import Image, ImageTk
+
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPM
 
 TIME_PERIOD_MS = 3500
 
@@ -105,7 +107,15 @@ class Captcha():
 			msg = response.raw
 
 		self.log(f'CAPTCHA.SAVE: {status}={msg}')
-		svg2png(bytestring=data, background_color='white', write_to=resource_path('captcha.png'))
+
+		with open(resource_path('captcha.svg'), "w") as text_file:
+   			text_file.write(data.replace('\\', ''))
+
+		drawing = svg2rlg(resource_path('captcha.svg'))
+		renderPM.drawToFile(drawing, resource_path('captcha.png'), fmt="PNG")
+
+		# svg2png(bytestring=data, background_color='white', write_to=resource_path('captcha.png'))
+
 		self.log(f'CAPTCHA.SAVE: Saved captcha image in captcha.png')
 
 class Schedule():
