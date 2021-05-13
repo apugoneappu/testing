@@ -1,1 +1,1 @@
-pyinstaller gui.py --windowed --onefile --add-data 'data/sound.wav:.' --additional-hooks-dir './hooks' --hiddenimport 'cairosvg' --hiddenimport 'cairocffi' -y -n 'Book My Slot' --icon 'data/icons/vaccine.icns' --osx-bundle-identifier 'com.apoorve.singhal.bookmyslot'
+pyinstaller gui.py --console --onedir --add-data 'data/sound.wav:.' --additional-hooks-dir './hooks' --hiddenimport 'cairosvg' --hiddenimport 'cairocffi' -y -n 'Book My Slot' --icon 'data/icons/vaccine.icns' --osx-bundle-identifier 'com.apoorve.singhal.bookmyslot'
