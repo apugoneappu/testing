@@ -1,7 +1,7 @@
 <img width="812" alt="app screenshot" src="https://user-images.githubusercontent.com/15952329/117893738-9c4e7680-b2d8-11eb-98be-fa79fa24f5fd.png">
 
 ## Supported platforms
-macOS
+macOS, Windows
 
 ## How to use
 
