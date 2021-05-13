@@ -1,4 +1,4 @@
-<img width="812" alt="app screenshot" src="https://user-images.githubusercontent.com/15952329/117893738-9c4e7680-b2d8-11eb-98be-fa79fa24f5fd.png">
+<img width="812" alt="Screenshot 2021-05-13 at 7 40 59 AM" src="https://user-images.githubusercontent.com/15952329/118070514-af8a4080-b3c3-11eb-8f13-cf50533f167c.png">
 
 ## Supported platforms
 macOS, Windows
@@ -16,7 +16,7 @@ Example: names - `Raju Goyal, Meena Singh, Hima Nain`
 5. Select your state from the list of states.
 6. Select your district(s) from the list of districts. To select more than one district, hold the control key while clicking them.
 7. Click `Submit`
-8. As soon as a vaccination appointment is available, a new window popup opens up to show a captcha image. To grab your attention quickly, BookMySlot will make a sound when the captcha is required.   <img src="https://user-images.githubusercontent.com/15952329/117894597-52669000-b2da-11eb-908b-5b1a6e95d90f.png" height="200">
+8. As soon as a vaccination appointment is available, a new window popup opens up to show a captcha image. To grab your attention quickly, BookMySlot will make a sound when the captcha is required.   <img height="200" alt="Screenshot 2021-05-13 at 7 45 02 AM" src="https://user-images.githubusercontent.com/15952329/118070555-c6309780-b3c3-11eb-9105-dc653193d0cc.png">
 9. Enter the captcha and press `OK`.     
 10. If the booking is successful, a confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc.   <img width="372" alt="Screenshot 2021-05-12 at 5 37 44 AM" src="https://user-images.githubusercontent.com/15952329/117899446-c312aa00-b2e4-11eb-8442-28a2daf5b8d9.png">
 11. If the booking was unsuccessful for any reason (appointment slot filled before confirmation, incorrect captcha etc.), then BookMySlot will keep looking for more appointments.
@@ -24,3 +24,4 @@ Example: names - `Raju Goyal, Meena Singh, Hima Nain`
 ## Making
 
 Hi, my name is Apoorve Singhal. I made BookMySlot to automate the vaccine booking process for my family who were unable to book a slot due to their lack of proficiency with technology. I hope it will be helpful to other folks and gives them a chance to get vaccinated.
+
