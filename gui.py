@@ -25,7 +25,7 @@ window = tk.Tk()
 
 # Source - https://stackoverflow.com/questions/33595791/blocking-input-dialog-box
 class CaptchaDialog(object):
-	def __init__(self):
+	def __init__(self, centre_name, centre_address, app_date, app_time):
 		self.toplevel = tk.Toplevel(window)
 
 		self.toplevel.rowconfigure(0, weight=1)
@@ -34,16 +34,19 @@ class CaptchaDialog(object):
 		self.frame_captcha = tk.Frame(master=self.toplevel)
 		self.frame_captcha.grid(row=0, column=0, sticky='news')
 
-		self.frame_captcha.rowconfigure([0,1], weight=1) 
+		self.frame_captcha.rowconfigure([0,1,2], weight=1) 
 		self.frame_captcha.columnconfigure(0, weight=2) # frameleft - label, entry
 		self.frame_captcha.columnconfigure(1, weight=7) #label
 
+		self.label_booking = tk.Label(master=self.frame_captcha, text=f'Centre name: {centre_name}\nAddress: {centre_address}\nDate: {app_date}\nTime: {app_time}')
+		self.label_booking.grid(row=0, column=0, rowspan=1, columnspan=1, sticky='news')
+
 		self.captcha_str = tk.StringVar()
 		self.entry_captcha = tk.Entry(master=self.frame_captcha, textvariable=self.captcha_str)
-		self.entry_captcha.grid(row=0, column=0, rowspan=1, columnspan=1, sticky='news')
+		self.entry_captcha.grid(row=1, column=0, rowspan=1, columnspan=1, sticky='news')
 
 		self.frame_buttons = tk.Frame(master=self.frame_captcha)
-		self.frame_buttons.grid(row=1, column=0, rowspan=1, columnspan=1, sticky='news')
+		self.frame_buttons.grid(row=2, column=0, rowspan=1, columnspan=1, sticky='news')
 
 		self.button_ok = tk.Button(master=self.frame_buttons, text='OK', command=self.toplevel.destroy)
 		self.button_ok.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -179,18 +182,22 @@ class Schedule():
 				self.payload["session_id"] = appointment['session_id']
 				self.payload["slot"] = appointment['time']
 
+				appointment_date = appointment['date']
+				appointment_time = appointment['time']
+				centre_name = appointment['name']
+				cenre_address = appointment['address']
+
 				# Make sound
 				play_obj = self.wave_obj.play()
 
 				self.captcha.save(token)
-				self.payload['captcha'] = CaptchaDialog().show()
+				self.payload['captcha'] = CaptchaDialog(centre_name, cenre_address, appointment_date, appointment_time).show()
 
 				status = self.try_booking(self.payload, self.headers)
 
 				if (status == 0):
 					names_str = " | ".join(list(bf_group['name']))
-					appointment_date = appointment['date']
-					centre_name = appointment['name']
+					
 					success_str = f'Vaccine booked on {appointment_date} at {centre_name} for: {names_str}!'
 
 					messagebox.showinfo(
@@ -291,6 +298,7 @@ class Appointment():
 			centre_id = centre['center_id']
 			pincode = centre['pincode']
 			sessions = centre['sessions']
+			address = centre['address']
 
 			for sess in sessions:
 
@@ -305,6 +313,7 @@ class Appointment():
 					entry = {
 						'name': name,
 						'center_id': centre_id,
+						'address': address,
 						'pincode': pincode,
 						'date': date,
 						'session_id': session_id,
