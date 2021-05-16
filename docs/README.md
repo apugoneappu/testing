@@ -1,4 +1,4 @@
-<img width="812" alt="Screenshot 2021-05-13 at 7 40 59 AM" src="https://user-images.githubusercontent.com/15952329/118070514-af8a4080-b3c3-11eb-8f13-cf50533f167c.png">
+<img width="812" alt="Screenshot 2021-05-16 at 10 37 20 PM" src="https://user-images.githubusercontent.com/15952329/118413700-4b66c580-b6be-11eb-962a-94dc953c2820.png">
 
 ## Supported platforms
 [Click here to download for macOS v2.1.0](https://easyupload.io/fbz7if)   
@@ -36,7 +36,7 @@ Example: choose `Jaipur I` and `Jaisalmer`
 9. If you would like to proceed booking with the details shown in the captcha window, enter the captcha and press `OK`. If you don't want to proceed, press cancel and the program will continue searching for other slots. 
 
 10. If the booking is successful, a confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc.  
-<img width="372" alt="success window" src="https://user-images.githubusercontent.com/15952329/117899446-c312aa00-b2e4-11eb-8442-28a2daf5b8d9.png">
+<img width="372" alt="Screenshot 2021-05-16 at 10 39 19 PM" src="https://user-images.githubusercontent.com/15952329/118413736-69342a80-b6be-11eb-83a0-88a876393cd4.png">
 
 11. If the booking was unsuccessful for any reason (appointment slot filled before confirmation, incorrect captcha etc.), then BookMySlot will keep looking for more appointments.
 
