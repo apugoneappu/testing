@@ -55,7 +55,7 @@ class CaptchaDialog(object):
 		self.button_cancel.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
 		# Image right
-		loaded_img = Image.open(resource_path('captcha.png'))
+		loaded_img = Image.open(resource_path('data/captcha.png'))
 		self.img = ImageTk.PhotoImage(loaded_img)
 		self.label_image = tk.Label(master=self.frame_captcha, image=self.img)
 		self.label_image.image = self.img
@@ -111,11 +111,11 @@ class Captcha():
 
 		self.log(f'CAPTCHA.SAVE: {status}={msg}')
 
-		with open(resource_path('captcha.svg'), "w") as text_file:
+		with open(resource_path('data/captcha.svg'), "w") as text_file:
    			text_file.write(data.replace('\\', ''))
 
-		drawing = svg2rlg(resource_path('captcha.svg'))
-		renderPM.drawToFile(drawing, resource_path('captcha.png'), fmt="PNG")
+		drawing = svg2rlg(resource_path('data/captcha.svg'))
+		renderPM.drawToFile(drawing, resource_path('data/captcha.png'), fmt="PNG")
 
 		# svg2png(bytestring=data, background_color='white', write_to=resource_path('captcha.png'))
 
@@ -153,7 +153,7 @@ class Schedule():
 			'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
 		}
 
-		self.wave_obj = sa.WaveObject.from_wave_file(resource_path('sound.wav'))
+		self.captcha_sound = sa.WaveObject.from_wave_file(resource_path('data/captcha.wav'))
 
 		self.captcha = Captcha(self.log)
 	
@@ -188,7 +188,7 @@ class Schedule():
 				cenre_address = appointment['address']
 
 				# Make sound
-				play_obj = self.wave_obj.play()
+				self.captcha_sound.play()
 
 				self.captcha.save(token)
 				self.payload['captcha'] = CaptchaDialog(centre_name, cenre_address, appointment_date, appointment_time).show()
@@ -889,6 +889,8 @@ class GUI():
 		self.button_stop.configure(state=tk.DISABLED)
 		self.is_stop = False
 
+		self.logout_sound = sa.WaveObject.from_wave_file(resource_path('data/logout.wav'))
+
 	
 	def is_number_correct(self, element, length, msg_keyword):
 		
@@ -935,6 +937,9 @@ class GUI():
 
 	def log(self, addition, level='DEBUG'):
 
+		if (level == 'DEBUG'):
+			return
+
 		self.text_output.insert(tk.END, f'\n{time.ctime()} | {level} | {addition}')
 		self.text_output.see(tk.END)
 	
@@ -971,9 +976,10 @@ class GUI():
 
 	def stop(self):
 
+		self.countdown_timer.stop_and_reset()
+		self.logout_sound.play()
 		messagebox.showwarning('Session logged out', 'Session logged out! Please relogin using a new OTP')
 		
-		self.countdown_timer.stop_and_reset()
 		self.is_stop = True
 		self.toggle_submit_stop_buttons()
 		self.log('Stopping search!', level='USER')
