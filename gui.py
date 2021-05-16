@@ -806,9 +806,9 @@ class GUI():
 		self.label_states = tk.Label(self.frame_states, text='Choose state')
 		self.label_states.pack(side=tk.TOP, anchor=tk.NW)
 
-		self.states_list = list(self.state_to_id)
+		self.states_list = list(self.state_to_id.keys())
 		self.states_str = tk.StringVar(value=self.states_list)
-		self.listbox_states = tk.Listbox(self.frame_states, listvariable=self.states_str, height=7)
+		self.listbox_states = tk.Listbox(self.frame_states, listvariable=self.states_str, height=7, exportselection=False)
 		self.listbox_states.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 		self.listbox_states.bind("<<ListboxSelect>>", self.state_selected_callback)
 		self.sb_states = tk.Scrollbar(master=self.frame_states, orient='vertical', command=self.
@@ -820,12 +820,12 @@ class GUI():
 		self.frame_district = tk.Frame(master=self.frame_location)
 		self.frame_district.grid(row=0, column=1, sticky='news')
 
-		self.label_district = tk.Label(self.frame_district, text='Choose district(s) (hold control to select more than one)')
+		self.label_district = tk.Label(self.frame_district, text='Choose district(s) (click to select, click again to deselect)')
 		self.label_district.pack(side=tk.TOP, anchor=tk.NW)
 		
 		self.district_list = []
 		self.district_str = tk.StringVar(value=self.district_list)
-		self.listbox_district = tk.Listbox(self.frame_district, listvariable=self.district_str, height=7, selectmode=tk.EXTENDED)
+		self.listbox_district = tk.Listbox(self.frame_district, listvariable=self.district_str, height=7, selectmode=tk.MULTIPLE, exportselection=False)
 		self.listbox_district.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 		self.listbox_district.bind("<<ListboxSelect>>", self.districts_selected_callback)
 		self.sb_district = tk.Scrollbar(master=self.frame_district, orient='vertical', command=self.
