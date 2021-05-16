@@ -844,6 +844,7 @@ class GUI():
 
 		self.button_stop = tk.Button(master=self.frame_button_row, text='Stop', command=self.stop)
 		self.button_stop.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+		self.button_stop.configure(state=tk.DISABLED)
 		self.is_stop = False
 
 	
@@ -929,12 +930,27 @@ class GUI():
 	def stop(self):
 
 		self.is_stop = True
+		self.toggle_submit_stop_buttons()
 		self.log('Stopping search!', level='USER')
+
+	def toggle_submit_stop_buttons(self):
+
+		assert self.button_submit['state'] != self.button_stop['state'], \
+			f"Submit button: {self.button_submit['state']} and Stop button: {self.button_stop['state']}"
+
+		def invert_state(widget):
+
+			if widget['state'] == tk.NORMAL:
+				widget.configure(state=tk.DISABLED)
+			else:
+				widget.configure(state=tk.NORMAL)
+		
+		invert_state(self.button_submit)
+		invert_state(self.button_stop)
+
 
 	def submit_all(self):
 
-		self.is_stop = False
-		
 		if not self.is_number_correct(self.entry_mobile, 10, 'Mobile Number'):
 			return
 
@@ -971,6 +987,10 @@ class GUI():
 		self.appointment = Appointment(self.log, self.pincode_from, self.pincode, self.pincode_to)
 		self.schedule = Schedule(self.log)
 
+		# Disable all inputs except otp
+		self.is_stop = False
+		self.disable_all_inputs()
+
 		self.log(f'Starting! I will try to book slots once every {TIME_PERIOD_MS/1000} seconds', level='USER')
 		self.loop()
 
@@ -983,6 +1003,7 @@ class GUI():
 
 		if len(bfs) == 0:
 			self.log('No valid beneficiaries, stopping', level='USER')
+			self.stop()
 			return
 		
 		slots = []
@@ -999,6 +1020,18 @@ class GUI():
 		# source - https://stackoverflow.com/questions/2400262/how-to-create-a-timer-using-tkinter
 		self.window.after(TIME_PERIOD_MS, self.loop)
 
+	def disable_all_inputs(self):
+
+		self.entry_mobile.configure(state=tk.DISABLED)
+		self.entry_pincode.configure(state=tk.DISABLED)
+		self.entry_pincode_from.configure(state=tk.DISABLED)
+		self.entry_pincode_to.configure(state=tk.DISABLED)
+		self.entry_names.configure(state=tk.DISABLED)
+		
+		self.listbox_states.configure(state=tk.DISABLED, highlightbackground='blue')
+		self.listbox_district.configure(state=tk.DISABLED, highlightbackground='blue')
+
+		self.toggle_submit_stop_buttons()
 
 
 gui = GUI()
