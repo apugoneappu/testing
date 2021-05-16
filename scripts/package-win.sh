@@ -1,1 +1,0 @@
-pyinstaller gui.py --windowed --onefile --add-data 'data/sound.wav;.' --additional-hooks-dir './hooks' --hiddenimport 'cairosvg' --hiddenimport 'cairocffi' -y -n 'Book My Slot' --icon 'data/icons/vaccine.ico'

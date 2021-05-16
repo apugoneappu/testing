@@ -1,1 +1,0 @@
-pyinstaller gui.py --windowed --onefile --add-data 'data/sound.wav:.' -y -n 'Book My Slot' --icon 'data/icons/vaccine.icns' --osx-bundle-identifier 'com.apoorve.singhal.bookmyslot' --additional-hooks-dir './hooks'
