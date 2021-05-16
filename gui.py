@@ -4,7 +4,7 @@ import json
 from hashlib import sha256
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import time
 import pandas as pd
 import simpleaudio as sa
@@ -658,6 +658,41 @@ class OTP():
 		self.log(f'OTP.VALIDATE_OTP: {status}={msg}')
 		return data
 
+class CountDownTimer():
+
+	def __init__(self, master, str_time) -> None:
+		
+		self.master = master
+		self.str_time = str_time
+		self.str_time.set('Timer: 15:00')
+
+	def get_h_m(self, timedelta_obj):
+
+		m, s = str(timedelta_obj).split('.')[0].split(':')[1:]
+		return m, s
+
+	def start(self):
+
+		self.stop = False
+		self.end_time = (datetime.now() + timedelta(minutes=15)).time()
+		self.update()
+
+	def update(self):
+
+		if self.stop:
+			return
+
+		now = datetime.now().time()
+		duration = datetime.combine(date.min, self.end_time) - datetime.combine(date.min, now)
+		m, s = self.get_h_m(duration)
+		self.str_time.set('Timer: %2s:%2s' % (m, s))
+
+		self.master.after(1000, self.update)
+
+	def stop_and_reset(self):
+
+		self.stop = True
+		self.str_time.set('Timer: 15:00')
 
 
 class GUI():
@@ -702,16 +737,23 @@ class GUI():
 		self.state_to_id = States(self.log).get_states()
 		self.districts = Districts(self.log)
 
-		################ APP NAME #################
+		################ APP NAME AND COUNTDOWN TIMER #################
 
 		self.frame_app_name = tk.Frame(master=self.window)
 		self.frame_app_name.grid(row=0, column=0, sticky='news')
 
 		self.frame_app_name.rowconfigure(0, weight=1)
 		self.frame_app_name.columnconfigure(0, weight=1)
+		self.frame_app_name.columnconfigure(1, weight=0)
 
 		self.label_app_name = tk.Label(master=self.frame_app_name, text='BookMySlot: Covid Vaccine Booking')
 		self.label_app_name.grid(row=0, column=0, sticky='news')
+
+		self.str_timer = tk.StringVar()
+		self.label_timer = tk.Label(master=self.frame_app_name, textvariable=self.str_timer)
+		self.countdown_timer = CountDownTimer(self.label_timer, self.str_timer)
+		self.label_timer.grid(row=0, column=1, sticky='nsw', padx=20)
+
 
 		################ MOBILE #################
 
@@ -929,6 +971,9 @@ class GUI():
 
 	def stop(self):
 
+		messagebox.showwarning('Session logged out', 'Session logged out! Please relogin using a new OTP')
+		
+		self.countdown_timer.stop_and_reset()
 		self.is_stop = True
 		self.toggle_submit_stop_buttons()
 		self.log('Stopping search!', level='USER')
@@ -976,6 +1021,9 @@ class GUI():
 		self.token = self.otp_obj.validate_otp(self.otp, self.tnxId)
 		if not self.valid_token(self.token):
 			return 
+
+		# Start countdown
+		self.countdown_timer.start()
 
 		self.pincode_from = self.entry_pincode_from.get()
 		self.pincode = self.entry_pincode.get()
