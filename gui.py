@@ -155,6 +155,7 @@ class Schedule():
 
 		self.captcha_sound = sa.WaveObject.from_wave_file(resource_path('data/captcha.wav'))
 
+		self.blocked_centres = []
 		self.captcha = Captcha(self.log)
 	
 	def book_vaccine(self, token, bfs: list, appointments: pd.DataFrame):
@@ -187,11 +188,20 @@ class Schedule():
 				centre_name = appointment['name']
 				cenre_address = appointment['address']
 
+				if centre_name in self.blocked_centres:
+					self.log(f'Skipping slot in {centre_name}', level='USER')
+					continue
+
 				# Make sound
 				self.captcha_sound.play()
 
 				self.captcha.save(token)
 				self.payload['captcha'] = CaptchaDialog(centre_name, cenre_address, appointment_date, appointment_time).show()
+
+				if not self.payload['captcha']:
+					self.log(f'I will not try to book a slot in {centre_name} again for this session', level='USER')
+					self.blocked_centres.append(centre_name)
+					continue
 
 				status = self.try_booking(self.payload, self.headers)
 
