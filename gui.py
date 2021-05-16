@@ -463,6 +463,7 @@ class Beneficiaries():
 			msg += (" | ").join([b['name'] for b in bf_list_constructed])
 			
 		self.log(f'BENEFICIARIES.GET_BENEFICIARIES: {status}={msg}')
+		self.log(f'{msg}', level='USER')
 
 		return num_44_or_less, num_45_or_more, pd.DataFrame(bf_list_constructed)
 
@@ -940,7 +941,8 @@ class GUI():
 		if (level == 'DEBUG'):
 			return
 
-		self.text_output.insert(tk.END, f'\n{time.ctime()} | {level} | {addition}')
+		time_str = str(time.strftime("%d-%m-%Y %I:%M:%S %p", time.localtime()))
+		self.text_output.insert(tk.END, f'\n{time_str} | {addition}')
 		self.text_output.see(tk.END)
 	
 	def state_selected_callback(self, event):
@@ -952,7 +954,7 @@ class GUI():
 			state_name = self.states_list[idx]
 			state_id = self.state_to_id[state_name]
 
-			self.log(f'Chosen state is {state_name}', level='USER')
+			self.log(f'Chosen state is {state_name}')
 
 			self.district_to_id = self.districts.get_districts(state_id)
 			self.district_list = list(self.district_to_id.keys())
@@ -971,8 +973,8 @@ class GUI():
 			self.district_ids.append(district_id)
 			district_names.append(district_name)
 
-		district_name_joined = ", ".join(district_names)
-		self.log(f'Chosen districts are {district_name_joined}', level='USER')
+		self.district_name_joined = ", ".join(district_names)
+		self.log(f'Chosen districts are {self.district_name_joined}')
 
 	def stop(self):
 
@@ -982,7 +984,7 @@ class GUI():
 		
 		self.is_stop = True
 		self.toggle_submit_stop_buttons()
-		self.log('Stopping search!', level='USER')
+		self.log('Stopping search! Please login again with a new OTP.', level='USER')
 
 	def toggle_submit_stop_buttons(self):
 
@@ -1035,7 +1037,13 @@ class GUI():
 		self.pincode = self.entry_pincode.get()
 		self.pincode_to = self.entry_pincode_to.get()
 
-		self.log('Inputs received', level='USER')
+		self.log(f'You have chosen the districts {self.district_name_joined}', level='USER')
+
+		if self.names:
+			names_str = ", ".join(self.names)
+			self.log(f"I will only try to book slots for {names_str}. Please ensure that these names have the same spelling as registered on the CoWIN website.", level='USER')
+
+		self.log(f'I will book slots nearest to the pincode {self.pincode}, and only between pincodes {self.pincode_from} and {self.pincode_to} so it is not too far away from your house.', level='USER')
 
 		self.beneficiaries = Beneficiaries(self.log, self.names)
 		self.appointment = Appointment(self.log, self.pincode_from, self.pincode, self.pincode_to)
@@ -1045,7 +1053,7 @@ class GUI():
 		self.is_stop = False
 		self.disable_all_inputs()
 
-		self.log(f'Starting! I will try to book slots once every {TIME_PERIOD_MS/1000} seconds', level='USER')
+		self.log(f'Starting! I will look for new slots every {TIME_PERIOD_MS/1000} seconds', level='USER')
 		self.loop()
 
 	def loop(self):
@@ -1056,7 +1064,6 @@ class GUI():
 		num_44_or_less, num_45_or_more, bfs = self.beneficiaries.get_beneficiaries(self.token)
 
 		if len(bfs) == 0:
-			self.log('No valid beneficiaries, stopping', level='USER')
 			self.stop()
 			return
 		
