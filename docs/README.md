@@ -1,5 +1,7 @@
 <img width="812" alt="Screenshot 2021-05-16 at 10 37 20 PM" src="https://user-images.githubusercontent.com/15952329/118413700-4b66c580-b6be-11eb-962a-94dc953c2820.png">
 
+<img src="https://hitcounter.pythonanywhere.com/count/tag.svg" alt="Hits">
+
 ## Supported platforms
 [Click here to download for macOS v2.1.0](https://easyupload.io/fbz7if)   
 [Click here to download for Windows v2.1.0](https://easyupload.io/vwktym)
