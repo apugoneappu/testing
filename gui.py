@@ -170,12 +170,16 @@ class Schedule():
 			self.payload['beneficiaries'] = list(bf_group.id)
 			self.payload['dose'] = int(dose) # needed for converting from np.int64 -> int
 
-			if (under_45):
-				age_grouped_appointments = appointments[appointments.min_age < 45]
-			else:
-				age_grouped_appointments = appointments[appointments.min_age >= 45]
+			num = len(bf_group)
 
-			age_grouped_appointments = age_grouped_appointments.sort_values(by=['pincode_dist', 'sort', 'capacity'], ascending=(True, True, False))
+			dose_appointments = appointments[appointments[f'capacity_dose{dose}'] >= num]
+
+			if (under_45):
+				age_grouped_appointments = dose_appointments[appointments.min_age < 45]
+			else:
+				age_grouped_appointments = dose_appointments[appointments.min_age >= 45]
+
+			age_grouped_appointments = age_grouped_appointments.sort_values(by=['pincode_dist', f'capacity_dose{dose}', 'sort'], ascending=(True, False, True))
 
 			for idx, appointment in age_grouped_appointments.iterrows():
 
@@ -318,6 +322,9 @@ class Appointment():
 				available_capacity = sess['available_capacity']
 				slots = sess['slots']
 
+				available_capacity_dose1 = sess['available_capacity_dose1']
+				available_capacity_dose2 = sess['available_capacity_dose2']
+
 				for time in slots:
 
 					entry = {
@@ -329,6 +336,8 @@ class Appointment():
 						'session_id': session_id,
 						'min_age': min_age,
 						'capacity': available_capacity,
+						'capacity_dose1': available_capacity_dose1,
+						'capacity_dose2': available_capacity_dose2,
 						'time': time
 					}
 
@@ -338,7 +347,20 @@ class Appointment():
 
 		return self.slots
 	
-	def find_suitable_slots(self, slots: pd.DataFrame, is_44_or_less=1, is_45_or_more=1) -> pd.DataFrame:
+	def find_suitable_slots(self, slots: pd.DataFrame, bf_info: pd.DataFrame) -> pd.DataFrame:
+
+		# 'dose': bf_new_dose_number,
+		# 'under_45': bf_age < 45
+
+		def fix_num(a):
+			b = 1e5 if a == 0 else a
+			return b
+
+		num_44_or_less_dose1 = fix_num(len(bf_info[(bf_info.under_45) & (bf_info.dose == 1)]))
+		num_44_or_less_dose2 = fix_num(len(bf_info[(bf_info.under_45) & (bf_info.dose == 2)]))
+
+		num_45_or_more_dose1 = fix_num(len(bf_info[(~bf_info.under_45) & (bf_info.dose == 1)]))
+		num_45_or_more_dose2 = fix_num(len(bf_info[(~bf_info.under_45) & (bf_info.dose == 2)]))
 
 		if len(slots) == 0:
 			return slots
@@ -348,17 +370,19 @@ class Appointment():
 
 		slots = slots[(self.pincode_from <= slots.pincode) & (slots.pincode <= self.pincode_to)]
 
-		slots = slots.sort_values(by=['pincode_dist', 'sort', 'capacity'], ascending=(True, True, False))
+		slots = slots[(slots.capacity_dose1 >= num_44_or_less_dose1) | (slots.capacity_dose1 >= num_45_or_more_dose1) | (slots.capacity_dose2 >= num_44_or_less_dose2) | (slots.capacity_dose2 >= num_45_or_more_dose2)]
+
+		slots = slots.sort_values(by=['pincode_dist', 'capacity_dose1', 'capacity_dose2', 'sort'], ascending=(True, False, False, True))
 
 		df_44_or_less = slots.copy()
 		df_45_or_more = slots.copy()
 		
-		is_44_or_less = 1e5 if is_44_or_less == 0 else is_44_or_less
-		is_45_or_more = 1e5 if is_45_or_more == 0 else is_45_or_more
+		df_44_or_less = df_44_or_less[df_44_or_less.min_age < 45]
+		df_44_or_less = df_44_or_less[(df_44_or_less.capacity_dose1 >= num_44_or_less_dose1) | (df_44_or_less.capacity_dose2 >= num_44_or_less_dose2)]
 
-		df_44_or_less = df_44_or_less[(df_44_or_less.min_age < 45) & (df_44_or_less.capacity >= is_44_or_less)]
-		df_45_or_more = df_45_or_more[(df_45_or_more.min_age >= 45) & (df_45_or_more.capacity >= is_45_or_more)]
-
+		df_45_or_more = df_45_or_more[df_45_or_more.min_age >= 45]
+		df_45_or_more = df_45_or_more[(df_45_or_more.capacity_dose1 >= num_45_or_more_dose1) | (df_45_or_more.capacity_dose2 >= num_45_or_more_dose2)]
+		
 		final_df = pd.concat([df_44_or_less, df_45_or_more])
 		final_df.reset_index(drop=True, inplace=True)
 
@@ -436,8 +460,7 @@ class Beneficiaries():
 			bf_list_fetched = []
 			msg = response.raw
 
-		num_44_or_less = 0
-		num_45_or_more = 0
+		bf_info = []
 		bf_list_constructed = []
 		
 		for bf in bf_list_fetched:
@@ -455,10 +478,12 @@ class Beneficiaries():
 			bf_birth_year = int(bf['birth_year'])
 			bf_age = get_age(bf_birth_year)
 
-			if (bf_age <= 44):
-				num_44_or_less += 1
-			else:			
-				num_45_or_more += 1
+			bf_info.append(
+				{
+					'dose': bf_new_dose_number,
+					'under_45': bf_age < 45
+				}
+			)
 
 			bf_list_constructed.append({
 				'name': name,
@@ -475,7 +500,7 @@ class Beneficiaries():
 		self.log(f'BENEFICIARIES.GET_BENEFICIARIES: {status}={msg}')
 		self.log(f'{msg}', level='USER')
 
-		return num_44_or_less, num_45_or_more, pd.DataFrame(bf_list_constructed)
+		return pd.DataFrame(bf_info), pd.DataFrame(bf_list_constructed)
 
 
 class States():
@@ -1071,7 +1096,7 @@ class GUI():
 		if self.is_stop:
 			return
 
-		num_44_or_less, num_45_or_more, bfs = self.beneficiaries.get_beneficiaries(self.token)
+		bf_info, bfs = self.beneficiaries.get_beneficiaries(self.token)
 
 		if len(bfs) == 0:
 			self.stop()
@@ -1084,7 +1109,7 @@ class GUI():
 		slots_comb = pd.concat(slots)
 		slots_comb.drop_duplicates(inplace=True, ignore_index=True)
 
-		appointments = self.appointment.find_suitable_slots(slots_comb, num_44_or_less, num_45_or_more)
+		appointments = self.appointment.find_suitable_slots(slots_comb, bf_info)
 
 		self.schedule.book_vaccine(self.token, bfs, appointments)
 
