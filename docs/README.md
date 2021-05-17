@@ -64,8 +64,8 @@ Hi, my name is [Apoorve Singhal](https://twitter.com/apoorve_singhal). I made Bo
 
 ## Stats
 
-Number of visits: <img src="https://hitcounter.pythonanywhere.com/count/tag.svg" alt="Hits">
-
+<!-- https://hits.seeyoufarm.com/#badge -->
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fbookmyslot.life&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Page+visits&edge_flat=false)](https://hits.seeyoufarm.com)  
 ## Changelog
 
 v2.1.0:  
