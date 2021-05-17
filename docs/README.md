@@ -13,8 +13,8 @@
 BookMySlot helps you to book a vaccination slot easily. You need to enter your your basic details and preferences as detailed in the [how to use](#how-to-use) section. Due to CoWIN restrictions, the session expires after 15 minutes. BookMySlot shows the time remaining for the current session and it will show a popup and play an audio asking you to re-login once the current session expires.
 
 ## Downloads
-[Click here to download for macOS](https://dl.dropbox.com/s/mngpp5c37io6hp6/BookMySlot_macos_v2.1.0.zip)  
-[Click here to download for Windows](https://dl.dropbox.com/s/18ocw94lkjd1izy/BookMySlot_windows_v2.1.0.zip)
+[Click here to download for macOS v3](https://dl.dropbox.com/s/cq8fiqvau5itlwt/BookMySlot_macos_v3.0.0.zip)  
+[Click here to download for Windows v3](https://dl.dropbox.com/s/d214vrqkwcppj7t/BookMySlot_windows_v3.0.0.zip)
 
 After downloading the .zip file, uncompress it and click on Book My Slot app.  
 
@@ -60,13 +60,16 @@ BookMySlot tries to book a vaccination centre as close to your `pincode` as poss
 
 ## About me
 
-Hi, my name is [Apoorve Singhal](https://twitter.com/apoorve_singhal). I made BookMySlot to automate the vaccine booking process for my family who were unable to book a slot due to their lack of proficiency with technology. I hope it will be helpful to other folks and gives them a chance to get vaccinated.
+Hi, my name is [Apoorve Singhal](https://twitter.com/apoorve_singhal). I made BookMySlot to automate the vaccine booking process for my family who were unable to book a slot due to their lack of proficiency with technology. I hope it will be helpful to other folks and gives them a chance to get vaccinated. Please report issues by sending an email to sapoorve@gmail.com
 
 ## Stats
 
 <!-- https://hits.seeyoufarm.com/#badge -->
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fbookmyslot.life&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Page+visits&edge_flat=false)](https://hits.seeyoufarm.com)  
 ## Changelog
+
+v3.0.0:
+- CoWIN segregated slots into dose1 and dose2. This was causing captcha retries for some centres where `total doses = dose 1 + dose 2` was not matching up. Fixed that.
 
 v2.1.0:  
 - You can now ask BookMySlot not to book in a particular centre by clicking cancel on the booking captcha popup for that centre. This setting only persists for the current session.
