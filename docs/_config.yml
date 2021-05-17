@@ -1,4 +1,8 @@
 title: BookMySlot
 theme: jekyll-theme-cayman
-show_downloads: false
+show_downloads: true
 description: A simple desktop app for automatic vaccination appointment booking
+github:
+  is_project_page: false
+  zip_url: https://dl.dropbox.com/s/cq8fiqvau5itlwt/BookMySlot_macos_v3.0.0.zip
+  tar_url: https://dl.dropbox.com/s/d214vrqkwcppj7t/BookMySlot_windows_v3.0.0.zip
