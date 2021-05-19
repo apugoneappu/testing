@@ -925,6 +925,7 @@ class GUI():
 		self.is_stop = False
 
 		self.logout_sound = sa.WaveObject.from_wave_file(resource_path('data/logout.wav'))
+		self.tnxId = ''
 
 	
 	def is_number_correct(self, element, length, msg_keyword):
@@ -968,7 +969,14 @@ class GUI():
 			return
 		mobile = int(mobile)
 
-		self.tnxId = self.otp_obj.send_otp(mobile)
+		tnxId = self.otp_obj.send_otp(mobile)
+
+		if (tnxId != self.tnxId):
+			self.log('New OTP generated', level='USER')
+		else:
+			self.log('Please use the last OTP', level='USER')
+
+		self.tnxId = tnxId
 
 	def log(self, addition, level='DEBUG'):
 
