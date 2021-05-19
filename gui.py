@@ -417,7 +417,8 @@ class Beneficiaries():
 			'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
 		}
 
-		self.names = names
+		# Converting the input names to lower case
+		self.names_lower = [n.lower() for n in names]
 
 	def dose_to_book(self, bf: dict) -> int:
 
@@ -466,8 +467,8 @@ class Beneficiaries():
 		for bf in bf_list_fetched:
 			
 			name = bf['name']
-			if self.names:
-				if (name not in self.names):
+			if self.names_lower:
+				if (name.lower() not in self.names_lower):
 					continue
 
 			bf_new_dose_number = self.dose_to_book(bf)
