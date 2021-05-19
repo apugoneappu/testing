@@ -736,8 +736,6 @@ class GUI():
 
 	def __init__(self) -> None:
 
-		self.logs = ''
-
 		self.window = window
 		self.window.title('BookMySlot')
 
