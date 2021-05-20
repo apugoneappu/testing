@@ -1,0 +1,5 @@
+.buildozer/
+.vscode/
+kivy_venv/
+logview-0.20/
+bin/

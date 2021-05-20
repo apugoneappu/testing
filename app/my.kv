@@ -1,0 +1,61 @@
+<MyLayout>:
+
+	mobile_number_input:mobile_number_input
+	otp_input:otp_input
+	pincode_input:pincode_input
+	names_input:names_input
+
+	GridLayout:
+		cols:1
+		size:root.width, root.height
+		GridLayout:
+			cols:2
+
+			Label:
+				text:"Mobile Number"
+			TextInput:
+				id:mobile_number_input
+				multiline:False
+
+		Button:
+			text:"Get OTP"
+			font_size:32
+			on_press:root.get_otp_callback()
+		
+		GridLayout:
+			cols:2
+
+			Label:
+				text:"OTP"
+			TextInput:
+				id:otp_input
+				multiline:False
+
+			Label:
+				text:"Pincode"
+			TextInput:
+				id:pincode_input
+				multiline:False
+
+			Label:
+				text:"(Optional) Enter names (comma separated)"
+			TextInput:
+				id:names_input
+				multiline:False
+
+			Spinner:
+				id: state_spinner
+				text: "< Select State >"
+				values: root.states_list
+				on_text: root.state_selected_callback(state_spinner.text)
+
+			Spinner:
+				id: district_spinner
+				text: "< Select Districts >"
+				on_text: root.districts_selected_callback(district_spinner.text)
+		
+		Button:
+			text:"Start"
+			font_size:32
+			on_press:root.submit_all()
+ 
