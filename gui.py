@@ -21,12 +21,10 @@ def resource_path(relative_path):
 		 return os.path.join(sys._MEIPASS, relative_path)
 	 return os.path.join(os.path.abspath("."), relative_path)
 
-window = tk.Tk()
-
 # Source - https://stackoverflow.com/questions/33595791/blocking-input-dialog-box
 class CaptchaDialog(object):
-	def __init__(self, centre_name, centre_address, app_date, app_time):
-		self.toplevel = tk.Toplevel(window)
+	def __init__(self, centre_name, centre_address, app_date, app_time, vaccine, price):
+		self.toplevel = tk.Toplevel()
 
 		self.toplevel.rowconfigure(0, weight=1)
 		self.toplevel.columnconfigure(0, weight=1)
@@ -38,7 +36,7 @@ class CaptchaDialog(object):
 		self.frame_captcha.columnconfigure(0, weight=2) # frameleft - label, entry
 		self.frame_captcha.columnconfigure(1, weight=7) #label
 
-		self.label_booking = tk.Label(master=self.frame_captcha, text=f'Centre name: {centre_name}\nAddress: {centre_address}\nDate: {app_date}\nTime: {app_time}')
+		self.label_booking = tk.Label(master=self.frame_captcha, text=f'Centre name: {centre_name}\nAddress: {centre_address}\nDate: {app_date}\nTime: {app_time}\nVaccine: {vaccine}\nPrice: {price}')
 		self.label_booking.grid(row=0, column=0, rowspan=1, columnspan=1, sticky='news')
 
 		self.captcha_str = tk.StringVar()
@@ -191,6 +189,8 @@ class Schedule():
 				appointment_time = appointment['time']
 				centre_name = appointment['name']
 				cenre_address = appointment['address']
+				vaccine = appointment['vaccine']
+				price = appointment['price']
 
 				if centre_name in self.blocked_centres:
 					self.log(f'Skipping slot in {centre_name}', level='USER')
@@ -200,7 +200,7 @@ class Schedule():
 				self.captcha_sound.play()
 
 				self.captcha.save(token)
-				self.payload['captcha'] = CaptchaDialog(centre_name, cenre_address, appointment_date, appointment_time).show()
+				self.payload['captcha'] = CaptchaDialog(centre_name, cenre_address, appointment_date, appointment_time, vaccine, price).show()
 
 				if not self.payload['captcha']:
 					self.log(f'I will not try to book a slot in {centre_name} again for this session', level='USER')
@@ -249,7 +249,7 @@ class Schedule():
 
 class Appointment():
 
-	def __init__(self, logFn, pincode_from, my_pincode, pincode_to) -> None:
+	def __init__(self, logFn, pincode_from, my_pincode, pincode_to, vaccine_names, vaccine_price) -> None:
 
 		self.log = logFn
 		
@@ -258,6 +258,8 @@ class Appointment():
 		self.pincode_from = int(pincode_from)
 		self.my_pincode = int(my_pincode)
 		self.pincode_to = int(pincode_to)
+		self.vaccine_names = [v.lower() for v in vaccine_names]
+		self.vaccine_price = vaccine_price
 		
 		self.day = 0
 		self.month = 0
@@ -313,6 +315,12 @@ class Appointment():
 			pincode = centre['pincode']
 			sessions = centre['sessions']
 			address = centre['address']
+			fee_type = centre['fee_type']
+			vaccine_fees = centre.get('vaccine_fees', '')
+
+			# If the user has a price pref but the centre does not match it
+			if self.vaccine_price and (self.vaccine_price != fee_type):
+				continue
 
 			for sess in sessions:
 
@@ -321,6 +329,23 @@ class Appointment():
 				min_age = sess['min_age_limit']
 				available_capacity = sess['available_capacity']
 				slots = sess['slots']
+				
+				vaccine_name = sess['vaccine']
+				# If the user has a vaccine pref
+				if self.vaccine_names:
+					# But the centre does not have that vaccine
+					if vaccine_name.lower() not in self.vaccine_names:
+						continue
+				
+				price = 0
+				if vaccine_fees:
+					for v_entry in vaccine_fees:
+
+						v_name = v_entry['vaccine']
+						v_price = int(v_entry['fee'])
+
+						if v_name == vaccine_name:
+							price = v_price
 
 				available_capacity_dose1 = sess['available_capacity_dose1']
 				available_capacity_dose2 = sess['available_capacity_dose2']
@@ -338,7 +363,9 @@ class Appointment():
 						'capacity': available_capacity,
 						'capacity_dose1': available_capacity_dose1,
 						'capacity_dose2': available_capacity_dose2,
-						'time': time
+						'time': time,
+						'price': price,
+						'vaccine': vaccine_name
 					}
 
 					slots_list.append(entry)
@@ -736,19 +763,19 @@ class GUI():
 
 	def __init__(self) -> None:
 
-		self.window = window
+		self.window = tk.Tk()
 		self.window.title('BookMySlot')
 
-		self.window.geometry("700x500")
+		self.window.geometry("800x700")
 
-		self.window.rowconfigure(5, weight=1)
-		self.window.rowconfigure(7, weight=10)
+		self.window.rowconfigure(6, weight=1)
+		self.window.rowconfigure(8, weight=10)
 		self.window.columnconfigure(0, weight=1)
 
 		######### MOVING OUTPUT TO TOP ##########
 		################ Output #################
 		self.frame_output = tk.Frame(master=self.window)
-		self.frame_output.grid(row=7, column=0, sticky='news')
+		self.frame_output.grid(row=8, column=0, sticky='news')
 
 		self.frame_output.rowconfigure(0, weight=0, minsize=10)
 		self.frame_output.rowconfigure(1, weight=1, minsize=50)
@@ -868,10 +895,46 @@ class GUI():
 		self.entry_names = tk.Entry(master=self.frame_names)
 		self.entry_names.grid(row=0, column=1, sticky='news')
 
+		################ Options ###################
+
+		self.frame_options = tk.Frame(master=self.window)
+		self.frame_options.grid(row=5, column=0, sticky='news')
+
+		self.frame_options.rowconfigure(0, weight=1)
+		self.frame_options.columnconfigure([0,1], weight=1) #both
+
+		self.frame_vaccine = tk.Frame(self.frame_options)
+		self.frame_vaccine.grid(row=0, column=0, sticky='news')
+
+		self.label_vaccine = tk.Label(self.frame_vaccine, text=' (Optional) Vaccine name(s) (comma separated) ')
+		self.label_vaccine.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+		self.entry_vaccine = tk.Entry(self.frame_vaccine)
+		self.entry_vaccine.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+
+		# vaccine_options = ['Any', 'Covishield', 'Covaxin', 'Sputnik V']
+		# self.vaccine_name = tk.StringVar()
+		# self.vaccine_name.set('Any')
+		# self.menu_vaccine = tk.OptionMenu(self.frame_vaccine, self.vaccine_name, *vaccine_options)
+		# self.menu_vaccine.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+		self.frame_price = tk.Frame(self.frame_options)
+		self.frame_price.grid(row=0, column=1, sticky='news')
+
+		self.label_price = tk.Label(self.frame_price, text='Vaccine cost')
+		self.label_price.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+		price_options = ['Any', 'Free', 'Paid']
+		self.string_price = tk.StringVar()
+		self.string_price.set('Any')
+		self.menu_price = tk.OptionMenu(self.frame_price, self.string_price, *price_options)
+		self.menu_price.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+
+
 		################ Locations #################
 
 		self.frame_location = tk.Frame(master=self.window)
-		self.frame_location.grid(row=5, column=0, sticky='news')
+		self.frame_location.grid(row=6, column=0, sticky='news')
 
 		self.frame_location.rowconfigure(0, weight=1)
 		self.frame_location.columnconfigure(0, weight=1) #state
@@ -914,7 +977,7 @@ class GUI():
 		################ Submit everything #################
 
 		self.frame_button_row = tk.Frame(self.window)
-		self.frame_button_row.grid(row=6, column=0, sticky='news')
+		self.frame_button_row.grid(row=7, column=0, sticky='news')
 
 		self.button_submit = tk.Button(master=self.frame_button_row, text='Start', command=self.submit_all)
 		self.button_submit.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
@@ -984,7 +1047,7 @@ class GUI():
 			return
 
 		time_str = str(time.strftime("%d-%m-%Y %I:%M:%S %p", time.localtime()))
-		self.text_output.insert(tk.END, f'\n{time_str} | {addition}')
+		self.text_output.insert(tk.END, f'{time_str} | {addition} \n')
 		self.text_output.see(tk.END)
 	
 	def state_selected_callback(self, event):
@@ -1079,6 +1142,20 @@ class GUI():
 		self.pincode = self.entry_pincode.get()
 		self.pincode_to = self.entry_pincode_to.get()
 
+		self.vaccine_names = self.entry_vaccine.get()
+		if self.vaccine_names:
+			self.vaccine_names = self.vaccine_names.split(',')
+			self.vaccine_names = [n.lstrip(' ').rstrip(' ') for n in self.vaccine_names]
+			vacc_name_str = "\n".join(self.vaccine_names)
+			messagebox.showinfo(
+				title='Vaccine name', 
+				message=f'Vaccine names should exactly match as given on CoWIN:\n{vacc_name_str}'
+			)
+
+		self.vaccine_price = self.string_price.get()
+		if self.vaccine_price == 'Any':
+			self.vaccine_price = ''
+
 		self.log(f'You have chosen the districts {self.district_name_joined}', level='USER')
 
 		if self.names:
@@ -1088,7 +1165,7 @@ class GUI():
 		self.log(f'I will book slots nearest to the pincode {self.pincode}, and only between pincodes {self.pincode_from} and {self.pincode_to} so it is not too far away from your house.', level='USER')
 
 		self.beneficiaries = Beneficiaries(self.log, self.names)
-		self.appointment = Appointment(self.log, self.pincode_from, self.pincode, self.pincode_to)
+		self.appointment = Appointment(self.log, self.pincode_from, self.pincode, self.pincode_to, self.vaccine_names, self.vaccine_price)
 		self.schedule = Schedule(self.log)
 
 		# Disable all inputs except otp
