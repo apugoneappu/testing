@@ -1,20 +1,23 @@
 <img width="812" alt="Screenshot 2021-05-16 at 10 37 20 PM" src="https://user-images.githubusercontent.com/15952329/118413700-4b66c580-b6be-11eb-962a-94dc953c2820.png">
 
 ## Table of contents
-1. [Overview](#overview)
-2. [Downloads](#downloads)
-3. [How to use](#how-to-use)
-4. [Booking a nearby vaccination centre](#booking-a-nearby-vaccination-centre)
-5. [About me](#about-me)
-6. [Stats](#stats)
-7. [Changelog](#changelog)
+- [Table of contents](#table-of-contents)
+- [Overview](#overview)
+- [Downloads](#downloads)
+- [How to use](#how-to-use)
+- [Booking a nearby vaccination centre](#booking-a-nearby-vaccination-centre)
+- [About me](#about-me)
+- [Stats](#stats)
+- [Changelog](#changelog)
 
 ## Overview
 BookMySlot helps you to book a vaccination slot easily. You need to enter your your basic details and preferences as detailed in the [how to use](#how-to-use) section. Due to CoWIN restrictions, the session expires after 15 minutes. BookMySlot shows the time remaining for the current session and it will show a popup and play an audio asking you to re-login once the current session expires.
 
 ## Downloads
-[Click here to download for macOS v3](https://dl.dropbox.com/s/cq8fiqvau5itlwt/BookMySlot_macos_v3.0.0.zip)  
-[Click here to download for Windows v3](https://dl.dropbox.com/s/d214vrqkwcppj7t/BookMySlot_windows_v3.0.0.zip)
+[Click here to download for macOS v4](https://dl.dropbox.com/s/f1aelf4az31dnoz/BookMySlot_macos_v4.0.0.zip)  
+[Click here to download for Windows v4](https://dl.dropbox.com/s/ygnzvnlk2awho89/BookMySlot_windows_v4.0.0.zip)
+
+Version v4 release date: 21st May 8:00 AM 
 
 After downloading the .zip file, uncompress it and click on Book My Slot app.  
 
@@ -34,25 +37,30 @@ Example: pincode_from - `573240`, pincode - `573247`, pincode_to - `573250`
 4. (Optional) If you wish to book a slot for only some of the beneficiaries registered on CoWIN, enter their names here. If empty, BookMySlot will try to book for all valid beneficiaries registered on CoWIN.  
 Example: names - `Raju Singh, Meena Goyal`
 
-5. Select your state from the list of states.  
+5. (Optional) If you wish to book a slot for only some of the available vaccine types, enter their names here. If empty, BookMySlot will try to book for all available vaccines.   
+Example: vaccine names - `Covaxin, Covishield`
+
+6. (Optional) If you wish to book only free or paid slots, you can select the vaccine cost. 
+
+7. Select your state from the list of states.  
 Example: choose `Rajasthan`
 
-6. Select your district(s) from the list of districts. To select more than one district, hold the control key while clicking them.  
+8. Select your district(s) from the list of districts. To select more than one district, hold the control key while clicking them.  
 Example: choose `Jaipur I` and `Jaisalmer`
 
-7. Click `Submit`
+9. Click `Submit`
 
-8. As soon as a vaccination appointment is available, a new window popup opens up to show a captcha image. The captcha popup contains important details such as centre name, centre address, date and time of the booking. **To grab your attention, BookMySlot will make a sound when the captcha is required.**  
+10. As soon as a vaccination appointment is available, a new window popup opens up to show a captcha image. The captcha popup contains important details such as centre name, centre address, date and time of the booking. **To grab your attention, BookMySlot will make a sound when the captcha is required.**  
 <img height="200" alt="Screenshot 2021-05-15 at 9 46 00 PM" src="https://user-images.githubusercontent.com/15952329/118370876-66a2d980-b5c7-11eb-8b46-913b5b437617.png">
 
-9. If you would like to proceed booking with the details shown in the captcha window, enter the captcha and press `OK`. **If you don't want to proceed booking in a particular centre, press cancel and that centre will be blacklisted for you (only for the current session).** 
+11. If you would like to proceed booking with the details shown in the captcha window, enter the captcha and press `OK`. **If you don't want to proceed booking in a particular centre, press cancel and that centre will be blacklisted for you (only for the current session).** 
 
-10. If the booking is successful, a confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc.  
+12. If the booking is successful, a confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc.  
 <img width="372" alt="Screenshot 2021-05-16 at 10 39 19 PM" src="https://user-images.githubusercontent.com/15952329/118413736-69342a80-b6be-11eb-83a0-88a876393cd4.png">
 
-11. If the booking was unsuccessful for any reason (appointment slot filled before confirmation, incorrect captcha etc.), then BookMySlot will keep looking for more appointments.
+13. If the booking was unsuccessful for any reason (appointment slot filled before confirmation, incorrect captcha etc.), then BookMySlot will keep looking for more appointments.
 
-12. The current session expires after 15 minutes. You can see the time remaining in the current session at the top-right of the window. **BookMySlot will show a popup and play a sound prompting you to login again with a new OTP after the current session expires.**
+14. The current session expires after 15 minutes. You can see the time remaining in the current session at the top-right of the window. **BookMySlot will show a popup and play a sound prompting you to login again with a new OTP after the current session expires.**
 
 ## Booking a nearby vaccination centre
 
@@ -67,6 +75,13 @@ Hi, my name is [Apoorve Singhal](https://twitter.com/apoorve_singhal). I made Bo
 <!-- https://hits.seeyoufarm.com/#badge -->
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fbookmyslot.life&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Page+visits&edge_flat=false)](https://hits.seeyoufarm.com)  
 ## Changelog
+
+v4.0.0:
+- Added option to restrict vaccine name, vaccine price
+- Re-enabling all input options after every session
+- Logging when OTP generated
+- showing beneficiaries, vaccine name and price in captcha window
+- vaccine names and beneficiary names can be in any case now
 
 v3.0.0:
 - CoWIN segregated slots into dose1 and dose2. This was causing captcha retries for some centres where `total doses = dose 1 + dose 2` was not matching up. Fixed that.
