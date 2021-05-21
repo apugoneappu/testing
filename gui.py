@@ -23,7 +23,7 @@ def resource_path(relative_path):
 
 # Source - https://stackoverflow.com/questions/33595791/blocking-input-dialog-box
 class CaptchaDialog(object):
-	def __init__(self, centre_name, centre_address, app_date, app_time, vaccine, price):
+	def __init__(self, centre_name, centre_address, app_date, app_time, vaccine, price, bf_names):
 		self.toplevel = tk.Toplevel()
 
 		self.toplevel.rowconfigure(0, weight=1)
@@ -36,7 +36,7 @@ class CaptchaDialog(object):
 		self.frame_captcha.columnconfigure(0, weight=2) # frameleft - label, entry
 		self.frame_captcha.columnconfigure(1, weight=7) #label
 
-		self.label_booking = tk.Label(master=self.frame_captcha, text=f'Centre name: {centre_name}\nAddress: {centre_address}\nDate: {app_date}\nTime: {app_time}\nVaccine: {vaccine}\nPrice: {price}')
+		self.label_booking = tk.Label(master=self.frame_captcha, text=f'Centre name: {centre_name}\nAddress: {centre_address}\nDate: {app_date}\nTime: {app_time}\nVaccine: {vaccine}\nPrice: {price}\nPeople: {bf_names}')
 		self.label_booking.grid(row=0, column=0, rowspan=1, columnspan=1, sticky='news')
 
 		self.captcha_str = tk.StringVar()
@@ -164,6 +164,8 @@ class Schedule():
 		self.headers['authorization'] = f'Bearer {token}'
 
 		for (dose, under_45), bf_group in bfs.groupby(['dose', 'under_45']):
+
+			names_str = " | ".join(list(bf_group['name']))
 			
 			self.payload['beneficiaries'] = list(bf_group.id)
 			self.payload['dose'] = int(dose) # needed for converting from np.int64 -> int
@@ -200,7 +202,7 @@ class Schedule():
 				self.captcha_sound.play()
 
 				self.captcha.save(token)
-				self.payload['captcha'] = CaptchaDialog(centre_name, cenre_address, appointment_date, appointment_time, vaccine, price).show()
+				self.payload['captcha'] = CaptchaDialog(centre_name, cenre_address, appointment_date, appointment_time, vaccine, price, names_str).show()
 
 				if not self.payload['captcha']:
 					self.log(f'I will not try to book a slot in {centre_name} again for this session', level='USER')
@@ -210,7 +212,6 @@ class Schedule():
 				status = self.try_booking(self.payload, self.headers)
 
 				if (status == 0):
-					names_str = " | ".join(list(bf_group['name']))
 					
 					success_str = f'Vaccine booked on {appointment_date} at {centre_name} for: {names_str}!'
 
