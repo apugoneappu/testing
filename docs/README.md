@@ -69,7 +69,7 @@ BookMySlot tries to book a vaccination centre as close to your `pincode` as poss
 
 ## About me
 
-Hi, my name is [Apoorve Singhal](https://twitter.com/apoorve_singhal). I made BookMySlot to automate the vaccine booking process for my family who were unable to book a slot due to their lack of proficiency with technology. I hope it will be helpful to other folks and gives them a chance to get vaccinated. Please report issues by sending an email to sapoorve@gmail.com
+I made BookMySlot to automate the vaccine booking process for my family who were unable to book a slot due to their lack of proficiency with technology. I hope it will be helpful to other folks and gives them a chance to get vaccinated. Please report issues by sending an email to [contact@bookmyslot.life](mailto:contact@bookmyslot.life)
 
 ## Stats
 
