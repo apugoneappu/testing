@@ -1,4 +1,4 @@
-<img width="812" alt="Screenshot 2021-05-16 at 10 37 20 PM" src="https://user-images.githubusercontent.com/15952329/118413700-4b66c580-b6be-11eb-962a-94dc953c2820.png">
+<img width="912" alt="Screenshot 2021-05-21 at 8 16 20 AM" src="https://user-images.githubusercontent.com/15952329/119075671-c86fa300-ba0e-11eb-9dcd-6804696420d4.png">
 
 ## Table of contents
 - [Table of contents](#table-of-contents)
@@ -51,7 +51,8 @@ Example: choose `Jaipur I` and `Jaisalmer`
 9. Click `Submit`
 
 10. As soon as a vaccination appointment is available, a new window popup opens up to show a captcha image. The captcha popup contains important details such as centre name, centre address, date and time of the booking. **To grab your attention, BookMySlot will make a sound when the captcha is required.**  
-<img height="200" alt="Screenshot 2021-05-15 at 9 46 00 PM" src="https://user-images.githubusercontent.com/15952329/118370876-66a2d980-b5c7-11eb-8b46-913b5b437617.png">
+<img height="200" alt="Screenshot 2021-05-21 at 8 18 21 AM" src="https://user-images.githubusercontent.com/15952329/119075690-d6bdbf00-ba0e-11eb-90f0-f603de9a7e63.png">
+
 
 11. If you would like to proceed booking with the details shown in the captcha window, enter the captcha and press `OK`. **If you don't want to proceed booking in a particular centre, press cancel and that centre will be blacklisted for you (only for the current session).** 
 
