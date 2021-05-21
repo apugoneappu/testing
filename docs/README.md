@@ -17,7 +17,7 @@ BookMySlot helps you to book a vaccination slot easily. You need to enter your y
 [Click here to download for macOS v4](https://dl.dropbox.com/s/f1aelf4az31dnoz/BookMySlot_macos_v4.0.0.zip)  
 [Click here to download for Windows v4](https://dl.dropbox.com/s/ygnzvnlk2awho89/BookMySlot_windows_v4.0.0.zip)
 
-Version v4 release date: 21st May 8:00 AM 
+Version v4 release date: 21st May 11:40 AM 
 
 After downloading the .zip file, uncompress it and click on Book My Slot app.  
 
