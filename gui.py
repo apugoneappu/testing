@@ -985,10 +985,21 @@ class GUI():
 		self.button_stop = tk.Button(master=self.frame_button_row, text='Stop', command=self.stop)
 		self.button_stop.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 		self.button_stop.configure(state=tk.DISABLED)
-		self.is_stop = False
 
+		####### INIT ########
+		self.is_stop = False
 		self.logout_sound = sa.WaveObject.from_wave_file(resource_path('data/logout.wav'))
 		self.tnxId = ''
+		self.log(
+		'\n----------------------------------------------------------------------------------------\n'
+		'\nIMPORTANT INSTRUCTIONS: \n'
+		'\n1. The names field can be used to selectively book slots for some beneficiaries. Leaving it empty means you want to book for all registered beneficiaries.\nExample - Raju Singh, Meena Gupta\n'
+		'\n2. To book slots for only 18+ category, enter the names of only 18+ beneficiaries in the names field.\nExample - Raju Singh\n'
+		'\n3. The vaccine names field is used to selectively look for slots of only some types of vaccine. Leaving it empty means you want to book for all available vaccine types. Please use the options: "Covishield", "Covaxin", "Sputnik V"  \nExample - Covishield, Covaxin.\n'
+		'\n4. "Pincode from" and "Pincode to" fields are used to restrict the range of pincodes in which to book slots. This is done so that the vaccination centre is not too far away from you. The "Pincode" field is used to book slots as close to you as possible. \nExample - pincode from=302000, pincode=302005, pincode to = 302050 would try to book slots between 302000 and 302050, as close to 302005 as possible.\n'
+		'\n----------------------------------------------------------------------------------------\n', level='USER')
+
+		# self.text_output.see('3.0')
 
 	
 	def is_number_correct(self, element, length, msg_keyword):
@@ -1088,23 +1099,29 @@ class GUI():
 		messagebox.showwarning('Session logged out', 'Session logged out! Please relogin using a new OTP')
 		
 		self.is_stop = True
-		self.toggle_submit_stop_buttons()
+		self.toggle_inputs()
 		self.log('Stopping search! Please login again with a new OTP.', level='USER')
 
-	def toggle_submit_stop_buttons(self):
+	def invert_state(self, widget):
 
-		assert self.button_submit['state'] != self.button_stop['state'], \
-			f"Submit button: {self.button_submit['state']} and Stop button: {self.button_stop['state']}"
-
-		def invert_state(widget):
-
-			if widget['state'] == tk.NORMAL:
-				widget.configure(state=tk.DISABLED)
-			else:
-				widget.configure(state=tk.NORMAL)
+		if widget['state'] == tk.NORMAL:
+			widget.configure(state=tk.DISABLED)
+		else:
+			widget.configure(state=tk.NORMAL)
+	
+	def toggle_inputs(self):
 		
-		invert_state(self.button_submit)
-		invert_state(self.button_stop)
+		self.invert_state(self.button_submit)
+		self.invert_state(self.button_stop)
+		self.invert_state(self.entry_mobile)
+		self.invert_state(self.entry_pincode)
+		self.invert_state(self.entry_pincode_from)
+		self.invert_state(self.entry_pincode_to)
+		self.invert_state(self.entry_names)
+		self.invert_state(self.listbox_states)
+		self.invert_state(self.listbox_district)
+		self.invert_state(self.entry_vaccine)
+		self.invert_state(self.menu_price)
 
 
 	def submit_all(self):
@@ -1170,7 +1187,7 @@ class GUI():
 
 		# Disable all inputs except otp
 		self.is_stop = False
-		self.disable_all_inputs()
+		self.toggle_inputs()
 
 		self.log(f'Starting! I will look for new slots every {TIME_PERIOD_MS/1000} seconds', level='USER')
 		self.loop()
@@ -1199,19 +1216,6 @@ class GUI():
 
 		# source - https://stackoverflow.com/questions/2400262/how-to-create-a-timer-using-tkinter
 		self.window.after(TIME_PERIOD_MS, self.loop)
-
-	def disable_all_inputs(self):
-
-		self.entry_mobile.configure(state=tk.DISABLED)
-		self.entry_pincode.configure(state=tk.DISABLED)
-		self.entry_pincode_from.configure(state=tk.DISABLED)
-		self.entry_pincode_to.configure(state=tk.DISABLED)
-		self.entry_names.configure(state=tk.DISABLED)
-		
-		self.listbox_states.configure(state=tk.DISABLED, highlightbackground='blue')
-		self.listbox_district.configure(state=tk.DISABLED, highlightbackground='blue')
-
-		self.toggle_submit_stop_buttons()
 
 
 gui = GUI()
