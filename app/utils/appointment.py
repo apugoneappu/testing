@@ -1,6 +1,6 @@
 import requests
 import json
-# import pandas as pd
+import pandas as pd
 from datetime import datetime
 
 class Appointment():
@@ -103,9 +103,7 @@ class Appointment():
 
 		return self.slots
 	
-	# def find_suitable_slots(self, slots: pd.DataFrame, bf_info: pd.DataFrame) -> pd.DataFrame:
-	def find_suitable_slots(self, slots, bf_info):
-
+	def find_suitable_slots(self, slots: pd.DataFrame, bf_info: pd.DataFrame) -> pd.DataFrame:
 		# 'dose': bf_new_dose_number,
 		# 'under_45': bf_age < 45
 
@@ -119,6 +117,7 @@ class Appointment():
 		num_45_or_more_dose1 = fix_num(len(bf_info[(~bf_info.under_45) & (bf_info.dose == 1)]))
 		num_45_or_more_dose2 = fix_num(len(bf_info[(~bf_info.under_45) & (bf_info.dose == 2)]))
 
+		print(len(slots))
 		if len(slots) == 0:
 			return slots
 

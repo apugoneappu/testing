@@ -3,7 +3,7 @@ import json
 import os
 import sys
 import pandas as pd
-import simpleaudio as sa
+# import simpleaudio as sa
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 
@@ -13,48 +13,18 @@ def resource_path(relative_path):
 	return os.path.join(os.path.abspath("."), relative_path)
 
 # Source - https://stackoverflow.com/questions/33595791/blocking-input-dialog-box
-class CaptchaDialog(object):
-	def __init__(self, centre_name, centre_address, app_date, app_time):
-		self.toplevel = tk.Toplevel(window)
+# class CaptchaDialog(object):
+# 	def __init__(self, centre_name, centre_address, app_date, app_time):
 
-		self.toplevel.rowconfigure(0, weight=1)
-		self.toplevel.columnconfigure(0, weight=1)
+# 		# Image right
+# 		loaded_img = Image.open(resource_path('data/captcha.png'))
+# 		self.label_image.image = self.img
+# 		self.label_image.grid(row=0, column=1, sticky='news', rowspan=2, columnspan=1)
 
-		self.frame_captcha = tk.Frame(master=self.toplevel)
-		self.frame_captcha.grid(row=0, column=0, sticky='news')
-
-		self.frame_captcha.rowconfigure([0,1,2], weight=1) 
-		self.frame_captcha.columnconfigure(0, weight=2) # frameleft - label, entry
-		self.frame_captcha.columnconfigure(1, weight=7) #label
-
-		self.label_booking = tk.Label(master=self.frame_captcha, text=f'Centre name: {centre_name}\nAddress: {centre_address}\nDate: {app_date}\nTime: {app_time}')
-		self.label_booking.grid(row=0, column=0, rowspan=1, columnspan=1, sticky='news')
-
-		self.captcha_str = tk.StringVar()
-		self.entry_captcha = tk.Entry(master=self.frame_captcha, textvariable=self.captcha_str)
-		self.entry_captcha.grid(row=1, column=0, rowspan=1, columnspan=1, sticky='news')
-
-		self.frame_buttons = tk.Frame(master=self.frame_captcha)
-		self.frame_buttons.grid(row=2, column=0, rowspan=1, columnspan=1, sticky='news')
-
-		self.button_ok = tk.Button(master=self.frame_buttons, text='OK', command=self.toplevel.destroy)
-		self.button_ok.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
-		self.button_cancel = tk.Button(master=self.frame_buttons, text='Cancel', command=self.toplevel.destroy)
-		self.button_cancel.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-
-		# Image right
-		loaded_img = Image.open(resource_path('data/captcha.png'))
-		self.img = ImageTk.PhotoImage(loaded_img)
-		self.label_image = tk.Label(master=self.frame_captcha, image=self.img)
-		self.label_image.image = self.img
-		self.label_image.grid(row=0, column=1, sticky='news', rowspan=2, columnspan=1)
-
-	def show(self):
-		self.toplevel.grab_set()
-		self.toplevel.wait_window()
-		value = self.captcha_str.get()
-		return value
+# 	def show(self):
+# 		self.toplevel.wait_window()
+# 		value = self.captcha_str.get()
+# 		return value
 
 class Captcha():
 
@@ -141,7 +111,7 @@ class Schedule():
 			'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
 		}
 
-		self.captcha_sound = sa.WaveObject.from_wave_file(resource_path('data/captcha.wav'))
+		# self.captcha_sound = sa.WaveObject.from_wave_file(resource_path('data/captcha.wav'))
 
 		self.blocked_centres = []
 		self.captcha = Captcha(self.log)
@@ -178,17 +148,18 @@ class Schedule():
 				appointment_date = appointment['date']
 				appointment_time = appointment['time']
 				centre_name = appointment['name']
-				cenre_address = appointment['address']
+				centre_address = appointment['address']
 
 				if centre_name in self.blocked_centres:
 					self.log(f'Skipping slot in {centre_name}', level='USER')
 					continue
 
 				# Make sound
-				self.captcha_sound.play()
+				# self.captcha_sound.play()
 
 				self.captcha.save(token)
-				self.payload['captcha'] = CaptchaDialog(centre_name, cenre_address, appointment_date, appointment_time).show()
+				# self.payload['captcha'] = CaptchaDialog(centre_name, centre_address, appointment_date, appointment_time).show()
+				self.payload['captcha'] = 0
 
 				if not self.payload['captcha']:
 					self.log(f'I will not try to book a slot in {centre_name} again for this session', level='USER')
@@ -202,8 +173,12 @@ class Schedule():
 					
 					success_str = f'Vaccine booked on {appointment_date} at {centre_name} for: {names_str}!'
 
-					messagebox.showinfo(
-						title='Vaccine booked!', 
+					# messagebox.showinfo(
+					# 	title='Vaccine booked!', 
+					# 	message=success_str
+					# )
+					print(
+						'Vaccine booked!', 
 						message=success_str
 					)
 					

@@ -1,59 +1,82 @@
 __version__ = "1.0.1"
-
 import kivy
-kivy.require("1.11.1") # replace with your current kivy version !
+kivy.require("2.0.0") # replace with your current kivy version !
 
-from kivy.app import App
-from kivy.uix.widget import Widget
-from kivy.properties import ObjectProperty, NumericProperty
-from kivy.animation import Animation
+from kivy.lang.builder import Builder
+from kivy.clock import Clock
+from kivymd.app import MDApp
+from kivymd.uix.menu import MDDropdownMenu
 
-# import pandas as pd
+import pandas as pd
 from utils.otp import OTP, valid_token
 from utils.states import States
 from utils.districts import Districts
 from utils.beneficiaries import Beneficiaries
 from utils.appointment import Appointment
+from utils.schedule import Schedule
 from utils.utils import log, is_number_correct, is_names_correct
 
-TIME_PERIOD_MS = 3500
+TIME_PERIOD_MS = 3.5
 
-class MyLayout(Widget):
+class MyApp(MDApp):
 	
 	def __init__(self, **kwargs):
-		self.mobile_number_input = ObjectProperty(None)
-		self.otp_input = ObjectProperty(None)
-		self.pincode_input = ObjectProperty(None)
-		self.names_input = ObjectProperty(None)
-
+		super().__init__(**kwargs)
+		self.screen = Builder.load_file('main.kv')
 		self.otp_fn = OTP(log)
 		self.state_fn = States(log)
 		self.district_fn = Districts(log)
-		# self.schedule_fn = Schedule(log)
+		self.schedule_fn = Schedule(log)
 		# self.timer_fn = CountDownTimer()
 
 		self.build_state_list()
-
-		super().__init__(**kwargs)
+		self.district_item = []
+		self.district_menu = MDDropdownMenu(
+			caller = self.screen.ids.district_button,
+			items = self.district_item,
+			width_mult = 4
+		)
 
 	def get_otp_callback(self):
-		mobile_number = self.mobile_number_input.text
-		if not is_number_correct(mobile_number, 10, 'mobile number'):
-			return		
-		mobile_number = int(mobile_number)
+		self.mobile_number = self.root.ids.mobile_number_input.text
+		if not is_number_correct(self.mobile_number, 10, 'mobile number'):
+			return
+		self.mobile_number = int(self.mobile_number)
 
-		self.txnId = self.otp_fn.send_otp(mobile_number)
+		self.txnId = self.otp_fn.send_otp(self.mobile_number)
 
 	def build_state_list(self):
 		self.states_dict = self.state_fn.get_states()
 		self.states_list = list(self.states_dict.keys())
+
+		self.state_items = [
+			{
+				"text": state,
+				"viewclass": "OneLineListItem",
+				"on_release": lambda x=state: self.state_selected_callback(x)
+			} for state in self.states_list
+		]
+
+		self.state_menu = MDDropdownMenu(
+			caller = self.screen.ids.state_button,
+			items = self.state_items,
+			width_mult = 4
+		)
 
 	def state_selected_callback(self, state_name):
 		state_id = self.states_dict[state_name]
 		log(f'Chosen state is {state_name}')
 
 		self.districts_dict = self.district_fn.get_districts(state_id)
-		self.ids.district_spinner.values = list(self.districts_dict.keys())
+		self.districts_list = list(self.districts_dict.keys())
+		self.district_item = [
+			{
+				"text": district,
+				"viewclass": "OneLineListItem",
+				"on_release": lambda x=district: self.districts_selected_callback(x)
+			} for district in self.districts_list
+		]
+		self.district_menu.items = self.district_item
 
 	def districts_selected_callback(self, district_name):
 		self.district_ids = []
@@ -63,10 +86,10 @@ class MyLayout(Widget):
 
 	def submit_all(self):
 
-		entry_mobile = self.mobile_number_input.text
-		entry_otp = self.otp_input.text
-		entry_pincode = self.pincode_input.text
-		entry_names = self.names_input.text
+		entry_mobile = self.root.ids.mobile_number_input.text
+		entry_otp = self.root.ids.otp_input.text
+		entry_pincode = self.root.ids.pincode_input.text
+		entry_names = self.root.ids.names_input.text
 		entry_pincode_from = '000000'
 		entry_pincode_to = '999999'
 
@@ -113,45 +136,34 @@ class MyLayout(Widget):
 		# self.disable_all_inputs()
 
 		log(f'Starting! I will look for new slots every {TIME_PERIOD_MS/1000} seconds', level='USER')
-		# self.loop()
+		self.loop()
 
-	# def loop(self):
+	def loop(self):
 
-	# 	if self.is_stop:
-	# 		return
+		if self.is_stop:
+			return
 
-	# 	bf_info, bfs = self.beneficiaries_fn.get_beneficiaries(self.token)
+		bf_info, bfs = self.beneficiaries_fn.get_beneficiaries(self.token)
 
-	# 	if len(bfs) == 0:
-	# 		self.stop()
-	# 		return
+		if len(bfs) == 0:
+			self.stop()
+			return
 		
-	# 	slots = []
-	# 	for d_code in self.district_ids:
-	# 		slots.append(self.appointment_fn.find_slots(d_code))
+		slots = []
+		for d_code in self.district_ids:
+			slots.append(self.appointment_fn.find_slots(d_code))
 
-	# 	slots_comb = pd.concat(slots)
-	# 	slots_comb.drop_duplicates(inplace=True, ignore_index=True)
+		slots_comb = pd.concat(slots)
+		slots_comb.drop_duplicates(inplace=True, ignore_index=True)
 
-	# 	appointments = self.appointment_fn.find_suitable_slots(slots_comb, bf_info)
+		appointments = self.appointment_fn.find_suitable_slots(slots_comb, bf_info)
+		print(appointments)
 
-		# self.schedule.book_vaccine(self.token, bfs, appointments)
+		self.schedule_fn.book_vaccine(self.token, bfs, appointments)
+		print("no schedule")
 
 		# source - https://stackoverflow.com/questions/2400262/how-to-create-a-timer-using-tkinter
-		# self.window.after(TIME_PERIOD_MS, self.loop)
-
-	# def disable_all_inputs(self):
-
-	# 	self.entry_mobile.configure(state=tk.DISABLED)
-	# 	self.entry_pincode.configure(state=tk.DISABLED)
-	# 	self.entry_pincode_from.configure(state=tk.DISABLED)
-	# 	self.entry_pincode_to.configure(state=tk.DISABLED)
-	# 	self.entry_names.configure(state=tk.DISABLED)
-		
-	# 	self.listbox_states.configure(state=tk.DISABLED, highlightbackground='blue')
-	# 	self.listbox_district.configure(state=tk.DISABLED, highlightbackground='blue')
-
-	# 	self.toggle_submit_stop_buttons()
+		# Clock.schedule_interval(lambda dt: self.loop(), TIME_PERIOD_MS)
 
 	def stop(self):
 
@@ -161,27 +173,10 @@ class MyLayout(Widget):
 		print('Session logged out', 'Session logged out! Please relogin using a new OTP')
 		
 		self.is_stop = True
-		self.toggle_submit_stop_buttons()
 		log('Stopping search! Please login again with a new OTP.', level='USER')
 
-	def toggle_submit_stop_buttons(self):
-
-		assert self.button_submit['state'] != self.button_stop['state'], \
-			f"Submit button: {self.button_submit['state']} and Stop button: {self.button_stop['state']}"
-
-		# def invert_state(widget):
-
-		# 	if widget['state'] == tk.NORMAL:
-		# 		widget.configure(state=tk.DISABLED)
-		# 	else:
-		# 		widget.configure(state=tk.NORMAL)
-		
-		# invert_state(self.button_submit)
-		# invert_state(self.button_stop)
-
-class MyApp(App):
 	def build(self):
-		return MyLayout()
+		return self.screen
 
 if __name__ == "__main__":
 	MyApp().run()

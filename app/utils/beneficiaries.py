@@ -1,6 +1,6 @@
 import requests
 import json
-# import pandas as pd
+import pandas as pd
 from utils.utils import get_age
 
 class Beneficiaries():
@@ -109,5 +109,4 @@ class Beneficiaries():
 		self.log(f'BENEFICIARIES.GET_BENEFICIARIES: {status}={msg}')
 		self.log(f'{msg}', level='USER')
 
-		# return pd.DataFrame(bf_info), pd.DataFrame(bf_list_constructed)
-		return None, None
+		return pd.DataFrame(bf_info), pd.DataFrame(bf_list_constructed)

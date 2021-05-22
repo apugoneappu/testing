@@ -1,0 +1,74 @@
+#:import Snackbar kivymd.uix.snackbar.Snackbar
+
+BoxLayout:
+	orientation: "vertical"
+	size: root.width, root.height
+	padding: '48dp'
+	spacing: '15dp'
+
+	MDScreen:
+
+		MDTextField:
+			id: mobile_number_input
+			hint_text: "Mobile Number"
+			mode: "rectangle"
+			pos_hint: {'center_x': 0.5, 'center_y': 0.9}
+			required: True
+			max_text_length: 10
+			helper_text_mode: "on_error"
+			helper_text: "Enter 10 digit mobile number"
+
+		MDFillRoundFlatButton:
+			text: 'Get OTP'
+			pos_hint: {'center_x': 0.5, 'center_y': 0.8}
+			on_press: app.get_otp_callback()
+			on_release: Snackbar(text='OTP Sent').open()
+
+		MDTextField:
+			id: otp_input
+			hint_text: "OTP"
+			mode: "rectangle"
+			pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+			required: True
+			max_text_length: 6
+			helper_text_mode: "on_error"
+			helper_text: "Enter 6 digit OTP"
+
+		MDTextField:
+			id:pincode_input
+			hint_text: "Pincode"
+			mode: "rectangle"
+			pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+			required: True
+			max_text_length: 6
+			helper_text_mode: "on_error"
+			helper_text: "Enter 6 digit Pincode"
+
+		MDTextField:
+			id:names_input
+			hint_text: "(Optional) Enter names (comma separated)"
+			mode: "rectangle"
+			pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+		MDRaisedButton:
+			id: state_button
+			text: "Choose State"
+			pos_hint: {"center_x": .2, "center_y": .4}
+			on_release: app.state_menu.open()
+
+		MDRaisedButton:
+			id: district_button
+			text: "Choose District"
+			pos_hint: {"center_x": .8, "center_y": 0.4}
+			on_release: app.district_menu.open()
+
+		MDFillRoundFlatButton:
+			text: 'Start'
+			pos_hint: {'center_x': 0.2, 'center_y': 0.1}
+			on_press: app.submit_all()
+			
+
+		MDFillRoundFlatButton:
+			text: 'Stop'
+			pos_hint: {'center_x': 0.8, 'center_y': 0.1}
+			on_press: app.stop()
