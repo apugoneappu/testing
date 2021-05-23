@@ -1,0 +1,11 @@
+__pycache__
+configs/*.json
+!configs/template.json
+.vscode
+test.py
+build
+dist
+.DS_Store
+*.spec
+vax.pem
+py_venv
