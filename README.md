@@ -1,3 +1,7 @@
+---
+comments: true
+---
+
 <img width="912" alt="Screenshot 2021-05-21 at 8 16 20 AM" src="https://user-images.githubusercontent.com/15952329/119075671-c86fa300-ba0e-11eb-9dcd-6804696420d4.png">
 
 ## Table of contents
