@@ -10,11 +10,15 @@ import pandas as pd
 import simpleaudio as sa
 from tkinter import messagebox
 from PIL import Image, ImageTk
+from src.update import UpdateChecker
 
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 
-TIME_PERIOD_MS = 3500
+###############################################################
+TIME_PERIOD_MS = 3000
+CURRENT_VERSION = '5.0.0'
+###############################################################
 
 def resource_path(relative_path):
 	 if hasattr(sys, '_MEIPASS'):
@@ -49,7 +53,7 @@ class CaptchaDialog(object):
 		self.button_ok = tk.Button(master=self.frame_buttons, text='OK', command=self.toplevel.destroy)
 		self.button_ok.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-		self.button_cancel = tk.Button(master=self.frame_buttons, text='Cancel', command=self.toplevel.destroy)
+		self.button_cancel = tk.Button(master=self.frame_buttons, text='Cancel', command=self.cancel_callback)
 		self.button_cancel.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
 		# Image right
@@ -58,6 +62,10 @@ class CaptchaDialog(object):
 		self.label_image = tk.Label(master=self.frame_captcha, image=self.img)
 		self.label_image.image = self.img
 		self.label_image.grid(row=0, column=1, sticky='news', rowspan=2, columnspan=1)
+	
+	def cancel_callback(self):
+		self.captcha_str.set('')
+		self.toplevel.destroy()
 
 	def show(self):
 		self.toplevel.grab_set()
@@ -151,6 +159,8 @@ class Schedule():
 			'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
 		}
 
+		self.donation_msg = 'If you find the app useful, please consider donating at \n\n instamojo.com/@bookmyslot \n\n60% of all proceeds will be donated to COVID relief.'
+
 		self.captcha_sound = sa.WaveObject.from_wave_file(resource_path('data/captcha.wav'))
 
 		self.blocked_centres = []
@@ -219,9 +229,15 @@ class Schedule():
 						title='Vaccine booked!', 
 						message=success_str
 					)
+
+					messagebox.showinfo(
+						title='Donation',
+						message=self.donation_msg
+					)
 					
 					self.log(f'SCHEDULE.BOOK_VACCINE: {success_str}')
 					self.log(f'{success_str}', level='USER')
+					self.log(self.donation_msg, level='USER')
 					break
 
 	
@@ -1000,7 +1016,20 @@ class GUI():
 		'\n4. "Pincode from" and "Pincode to" fields are used to restrict the range of pincodes in which to book slots. This is done so that the vaccination centre is not too far away from you. The "Pincode" field is used to book slots as close to you as possible. \nExample - pincode from=302000, pincode=302005, pincode to = 302050 would try to book slots between 302000 and 302050, as close to 302005 as possible.\n'
 		'\n----------------------------------------------------------------------------------------\n', level='USER')
 
-		# self.text_output.see('3.0')
+		self.close_if_not_latest()
+
+
+	def close_if_not_latest(self):
+
+		latest = self.uc.get_latest_version()
+
+		if latest:
+			if latest != CURRENT_VERSION:
+				messagebox.showerror(
+					'Old Version',
+					f'Please download the latest version {latest} from www.bookmyslot.life\nYour current version is {CURRENT_VERSION}'
+				)
+				self.window.destroy()
 
 	
 	def is_number_correct(self, element, length, msg_keyword):
@@ -1092,7 +1121,16 @@ class GUI():
 
 		self.district_name_joined = ", ".join(district_names)
 		self.log(f'Chosen districts are {self.district_name_joined}')
+	
+	def is_logged_in(self):
 
+		self.otp = self.entry_otp.get()
+		self.token = self.otp_obj.validate_otp(self.otp, self.tnxId)
+
+		return self.valid_token(self.token)
+
+		if not self.is_logged_in():
+			return
 	def stop(self):
 
 		self.countdown_timer.stop_and_reset()
