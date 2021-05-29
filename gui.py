@@ -223,6 +223,9 @@ class Schedule():
 
 				if (status == 0):
 					
+					# Remove the beneficiaries from the dataframe
+					bfs.drop(bf_group.index, inplace=True)
+
 					success_str = f'Vaccine booked on {appointment_date} at {centre_name} for: {names_str}!'
 
 					messagebox.showinfo(
@@ -250,7 +253,7 @@ class Schedule():
 			data = response.json().get('appointment_id', '')
 			msg = f'Appointment ID is {data}'
 			ret = 0
-		elif status == 400:
+		elif status == 400 or status == 409:
 			data = ''
 			msg = response.json().get('error', '')
 			ret = -1
@@ -266,9 +269,11 @@ class Schedule():
 
 class Appointment():
 
-	def __init__(self, logFn, pincode_from, my_pincode, pincode_to, vaccine_names, vaccine_price) -> None:
+	def __init__(self, logFn, pincode_from, my_pincode, pincode_to, vaccine_names, vaccine_price, token) -> None:
 
 		self.log = logFn
+
+		self.token = token
 		
 		self.slots = pd.DataFrame()
 
@@ -281,13 +286,13 @@ class Appointment():
 		self.day = 0
 		self.month = 0
 
-		self.url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id=%d&date=%02d-%02d-2021"
+		self.url = "https://gb8xvp6u7k.execute-api.ap-south-1.amazonaws.com/cowin-prod/api/v2/appointment/sessions/calendarByDistrict?district_id=%d&date=%02d-%02d-2021"
 
 		self.payload={}
 		self.headers = {
 			'authority': 'cdn-api.co-vin.in',
 			'accept': 'application/json, text/plain, */*',
-			'authorization': f'Bearer <AUTH_TOKEN_HERE>',
+			'authorization': f'Bearer {self.token}',
 			'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36',
 			'sec-gpc': '1',
 			'origin': 'https://selfregistration.cowin.gov.in',
@@ -462,6 +467,9 @@ class Beneficiaries():
 		}
 
 		# Converting the input names to lower case
+		self.names_lower = self.set_names(names)
+	
+	def set_names(self, names):
 		self.names_lower = [n.lower() for n in names]
 
 	def dose_to_book(self, bf: dict) -> int:
@@ -505,7 +513,6 @@ class Beneficiaries():
 			bf_list_fetched = []
 			msg = response.raw
 
-		bf_info = []
 		bf_list_constructed = []
 		
 		for bf in bf_list_fetched:
@@ -523,13 +530,6 @@ class Beneficiaries():
 			bf_birth_year = int(bf['birth_year'])
 			bf_age = get_age(bf_birth_year)
 
-			bf_info.append(
-				{
-					'dose': bf_new_dose_number,
-					'under_45': bf_age < 45
-				}
-			)
-
 			bf_list_constructed.append({
 				'name': name,
 				'id': bf_id,
@@ -545,7 +545,7 @@ class Beneficiaries():
 		self.log(f'BENEFICIARIES.GET_BENEFICIARIES: {status}={msg}')
 		self.log(f'{msg}', level='USER')
 
-		return pd.DataFrame(bf_info), pd.DataFrame(bf_list_constructed)
+		return pd.DataFrame(bf_list_constructed)
 
 
 class States():
@@ -732,6 +732,9 @@ class OTP():
 		elif status == 400:
 			data = ''
 			msg = response.json().get('error', '')
+		elif status == 401:
+			data = ''
+			msg = 'Unauthorized access! Please check the OTP or generate a new OTP.'
 		else:
 			data = ''
 			msg = response.raw
@@ -745,7 +748,7 @@ class CountDownTimer():
 		
 		self.master = master
 		self.str_time = str_time
-		self.str_time.set('Timer: 15:00')
+		self.str_time.set('Timer: 14:00')
 
 	def get_h_m(self, timedelta_obj):
 
@@ -755,7 +758,7 @@ class CountDownTimer():
 	def start(self):
 
 		self.stop = False
-		self.end_time = (datetime.now() + timedelta(minutes=15)).time()
+		self.end_time = (datetime.now() + timedelta(minutes=14)).time()
 		self.update()
 
 	def update(self):
@@ -766,14 +769,19 @@ class CountDownTimer():
 		now = datetime.now().time()
 		duration = datetime.combine(date.min, self.end_time) - datetime.combine(date.min, now)
 		m, s = self.get_h_m(duration)
-		self.str_time.set('Timer: %2s:%2s' % (m, s))
+		m = '%2s' % m
+		s = '%2s' % s
+		self.str_time.set('Timer: %s:%s' % (m, s))
+
+		if m == '00' and s == '00':
+			gui.stop()
 
 		self.master.after(1000, self.update)
 
 	def stop_and_reset(self):
 
 		self.stop = True
-		self.str_time.set('Timer: 15:00')
+		self.str_time.set('Timer: 14:00')
 
 
 class GUI():
@@ -781,13 +789,15 @@ class GUI():
 	def __init__(self) -> None:
 
 		self.window = tk.Tk()
-		self.window.title('BookMySlot')
+		self.window.title(f'BookMySlot (version: {CURRENT_VERSION})')
 
 		self.window.geometry("800x700")
 
 		self.window.rowconfigure(6, weight=1)
 		self.window.rowconfigure(8, weight=10)
 		self.window.columnconfigure(0, weight=1)
+
+		self.uc = UpdateChecker()
 
 		######### MOVING OUTPUT TO TOP ##########
 		################ Output #################
@@ -906,11 +916,22 @@ class GUI():
 		self.frame_names.columnconfigure(0, weight=2) #label
 		self.frame_names.columnconfigure(1, weight=7) #entry
 
-		self.label_names = tk.Label(master=self.frame_names , text='(Optional) Enter names (comma separated)')
-		self.label_names.grid(row=0, column=0, sticky='news')
+		self.button_names = tk.Button(self.frame_names, text='Get beneficiaries', command=self.get_beneficiaries_callback)
+		self.button_names.grid(row=0, column=0, sticky='ew')
 
-		self.entry_names = tk.Entry(master=self.frame_names)
-		self.entry_names.grid(row=0, column=1, sticky='news')
+		self.frame_listbox_names = tk.Frame(self.frame_names)
+		self.frame_listbox_names.grid(row=0, column=1, sticky='news')
+
+		names_list = ["Please click the 'Get beneficiaries button'"]
+		self.names_str = tk.StringVar(value=names_list)
+		self.listbox_names = tk.Listbox(self.frame_listbox_names, listvariable=self.names_str, height=5, selectmode=tk.MULTIPLE, exportselection=False)
+		self.listbox_names.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+		self.listbox_names.bind("<<ListboxSelect>>", self.names_selected_callback)
+		self.sb_names = tk.Scrollbar(master=self.frame_listbox_names, orient='vertical', command=self.
+		listbox_names.yview)
+		self.listbox_names.configure(yscrollcommand=self.sb_names.set)
+		self.sb_names.pack(side=tk.RIGHT, fill=tk.Y)
+
 
 		################ Options ###################
 
@@ -1004,16 +1025,17 @@ class GUI():
 		self.button_stop.configure(state=tk.DISABLED)
 
 		####### INIT ########
+		self.selected_bfs = []
 		self.is_stop = False
 		self.logout_sound = sa.WaveObject.from_wave_file(resource_path('data/logout.wav'))
 		self.tnxId = ''
 		self.log(
 		'\n----------------------------------------------------------------------------------------\n'
 		'\nIMPORTANT INSTRUCTIONS: \n'
-		'\n1. The names field can be used to selectively book slots for some beneficiaries. Leaving it empty means you want to book for all registered beneficiaries.\nExample - Raju Singh, Meena Gupta\n'
-		'\n2. To book slots for only 18+ category, enter the names of only 18+ beneficiaries in the names field.\nExample - Raju Singh\n'
-		'\n3. The vaccine names field is used to selectively look for slots of only some types of vaccine. Leaving it empty means you want to book for all available vaccine types. Please use the options: "Covishield", "Covaxin", "Sputnik V"  \nExample - Covishield, Covaxin.\n'
-		'\n4. "Pincode from" and "Pincode to" fields are used to restrict the range of pincodes in which to book slots. This is done so that the vaccination centre is not too far away from you. The "Pincode" field is used to book slots as close to you as possible. \nExample - pincode from=302000, pincode=302005, pincode to = 302050 would try to book slots between 302000 and 302050, as close to 302005 as possible.\n'
+		'\n1. To book slots for only 18+ category, choose only those beneficiaries from the names.\n'
+		'\n2. The vaccine names field is used to selectively look for slots of only some types of vaccine. Leaving it empty means you want to book for all available vaccine types. Please use the options: "Covishield", "Covaxin", "Sputnik V"  \nExample - Covishield, Covaxin.\n'
+		'\n3. "Pincode from" and "Pincode to" fields are used to restrict the range of pincodes in which to book slots. This is done so that the vaccination centre is not too far away from you. The "Pincode" field is used to book slots as close to you as possible. \nExample - pincode from=302000, pincode=302005, pincode to = 302050 would try to book slots between 302000 and 302050, as close to 302005 as possible.\n\n'
+		'Please report issues at contact@bookmyslot.life'
 		'\n----------------------------------------------------------------------------------------\n', level='USER')
 
 		self.close_if_not_latest()
@@ -1128,9 +1150,24 @@ class GUI():
 		self.token = self.otp_obj.validate_otp(self.otp, self.tnxId)
 
 		return self.valid_token(self.token)
+	
+	def get_beneficiaries_callback(self):
 
 		if not self.is_logged_in():
 			return
+		
+		self.beneficiaries = Beneficiaries(self.log)
+		self.bfs = self.beneficiaries.get_beneficiaries(self.token)
+
+		self.names_str.set(list(self.bfs['name']))
+
+	def names_selected_callback(self, event):
+
+		name_idxs = event.widget.curselection()
+
+		if name_idxs:
+			self.selected_bfs = self.bfs.iloc[list(name_idxs)]
+
 	def stop(self):
 
 		self.countdown_timer.stop_and_reset()
@@ -1156,7 +1193,6 @@ class GUI():
 		self.invert_state(self.entry_pincode)
 		self.invert_state(self.entry_pincode_from)
 		self.invert_state(self.entry_pincode_to)
-		self.invert_state(self.entry_names)
 		self.invert_state(self.listbox_states)
 		self.invert_state(self.listbox_district)
 		self.invert_state(self.entry_vaccine)
@@ -1180,16 +1216,9 @@ class GUI():
 		if not self.is_number_correct(self.entry_pincode_to, 6, 'Pincode To'):
 			return
 
-		self.names = self.entry_names.get()
-		if self.names:
-			self.names = self.names.split(',')
-			self.names = [n.lstrip(' ').rstrip(' ') for n in self.names]
-			self.is_names_correct(self.names)
-
-		self.otp = self.entry_otp.get()
-		self.token = self.otp_obj.validate_otp(self.otp, self.tnxId)
-		if not self.valid_token(self.token):
-			return 
+		if len(self.selected_bfs) == 0:
+			messagebox.showerror('Select names', 'Please choose some names')
+			return
 
 		# Start countdown
 		self.countdown_timer.start()
@@ -1214,14 +1243,13 @@ class GUI():
 
 		self.log(f'You have chosen the districts {self.district_name_joined}', level='USER')
 
-		if self.names:
-			names_str = ", ".join(self.names)
-			self.log(f"I will only try to book slots for {names_str}. Please ensure that these names have the same spelling as registered on the CoWIN website.", level='USER')
-
 		self.log(f'I will book slots nearest to the pincode {self.pincode}, and only between pincodes {self.pincode_from} and {self.pincode_to} so it is not too far away from your house.', level='USER')
 
-		self.beneficiaries = Beneficiaries(self.log, self.names)
-		self.appointment = Appointment(self.log, self.pincode_from, self.pincode, self.pincode_to, self.vaccine_names, self.vaccine_price)
+		names_str = ", ".join(list(self.selected_bfs['name']))
+		self.log(f"I will only try to book slots for {names_str}.", level='USER')
+		self.beneficiaries.set_names(list(self.selected_bfs['name']))
+
+		self.appointment = Appointment(self.log, self.pincode_from, self.pincode, self.pincode_to, self.vaccine_names, self.vaccine_price, self.token)
 		self.schedule = Schedule(self.log)
 
 		# Disable all inputs except otp
@@ -1236,9 +1264,8 @@ class GUI():
 		if self.is_stop:
 			return
 
-		bf_info, bfs = self.beneficiaries.get_beneficiaries(self.token)
-
-		if len(bfs) == 0:
+		if len(self.selected_bfs) == 0:
+			self.log('No more valid beneficiaries found. Stopping search.', level='USER')
 			self.stop()
 			return
 		
@@ -1249,9 +1276,11 @@ class GUI():
 		slots_comb = pd.concat(slots)
 		slots_comb.drop_duplicates(inplace=True, ignore_index=True)
 
-		appointments = self.appointment.find_suitable_slots(slots_comb, bf_info)
+		appointments = self.appointment.find_suitable_slots(slots_comb, self.selected_bfs)
 
-		self.schedule.book_vaccine(self.token, bfs, appointments)
+		self.log(f'Found {len(slots_comb)} slots of which {len(appointments)} are valid.', level='USER')
+
+		self.schedule.book_vaccine(self.token, self.selected_bfs, appointments)
 
 		# source - https://stackoverflow.com/questions/2400262/how-to-create-a-timer-using-tkinter
 		self.window.after(TIME_PERIOD_MS, self.loop)
