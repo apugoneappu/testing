@@ -73,7 +73,7 @@ Hi! I made BookMySlot to automate the vaccine booking process for my family who 
 
 ## Donation
 
-If the app helped you, please consider supporting the development of this app! Donations can be made at [www.instamojo.com/@bookmyslot](www.instamojo.com/@bookmyslot).  60% of all proceeds will be donated for COVID relief.
+If the app helped you, please consider supporting the development of this app! Donations can be made by [clicking on this link](www.instamojo.com/@bookmyslot).  60% of all proceeds will be donated for COVID relief.
 
 ## Stats
 
