@@ -1,4 +1,4 @@
-<img width="912" alt="Screenshot 2021-05-21 at 8 16 20 AM" src="https://user-images.githubusercontent.com/15952329/119075671-c86fa300-ba0e-11eb-9dcd-6804696420d4.png">
+<img width="912" alt="Screenshot 2021-05-29 at 11 57 55 PM" src="https://user-images.githubusercontent.com/15952329/120083360-c6c86e00-c0e5-11eb-8dde-821f7069d640.png">
 
 ## Table of contents
 - [Table of contents](#table-of-contents)
@@ -7,6 +7,7 @@
 - [How to use](#how-to-use)
 - [Booking a nearby vaccination centre](#booking-a-nearby-vaccination-centre)
 - [About me](#about-me)
+- [Donation](#donation)
 - [Stats](#stats)
 - [Changelog](#changelog)
 
@@ -14,10 +15,10 @@
 BookMySlot helps you to book a vaccination slot easily. You need to enter your your basic details and preferences as detailed in the [how to use](#how-to-use) section. Due to CoWIN restrictions, the session expires after 15 minutes. BookMySlot shows the time remaining for the current session and it will show a popup and play an audio asking you to re-login once the current session expires.
 
 ## Downloads
-[Click here to download for macOS v4](https://dl.dropbox.com/s/f1aelf4az31dnoz/BookMySlot_macos_v4.0.0.zip)  
-[Click here to download for Windows v4](https://dl.dropbox.com/s/ygnzvnlk2awho89/BookMySlot_windows_v4.0.0.zip)
+[Click here to download for macOS v5](https://dl.dropbox.com/s/r895nugzsooallr/BookMySlot_macos_v5.0.0.zip)  
+[Click here to download for Windows v5](https://dl.dropbox.com/s/pnirxuy1mdpfwp7/BookMySlot_windows_v5.0.0.zip)
 
-Version v4 release date: 21st May 8:00 AM 
+Version v5 release date: 30th May 1:30 AM 
 
 After downloading the .zip file, uncompress it and click on Book My Slot app.  
 
@@ -34,8 +35,7 @@ Example: OTP - `475384`
 3. BookMySlot tries to book a vaccination centre as close to your pincode (`573247`) as possible. To ensure that the vaccination centre is not too far, we will not book a vaccination centre outside of the range of pincodes pincode_from to pincode_to.  
 Example: pincode_from - `573240`, pincode - `573247`, pincode_to - `573250`
 
-4. (Optional) If you wish to book a slot for only some of the beneficiaries registered on CoWIN, enter their names here. If empty, BookMySlot will try to book for all valid beneficiaries registered on CoWIN.  
-Example: names - `Raju Singh, Meena Goyal`
+4. Click the `Get beneficiaries` button. Then, select all the names for which you wish to book a slot for.  
 
 5. (Optional) If you wish to book a slot for only some of the available vaccine types, enter their names here. If empty, BookMySlot will try to book for all available vaccines.   
 Example: vaccine names - `Covaxin, Covishield`
@@ -69,13 +69,23 @@ BookMySlot tries to book a vaccination centre as close to your `pincode` as poss
 
 ## About me
 
-Hi, my name is [Apoorve Singhal](https://twitter.com/apoorve_singhal). I made BookMySlot to automate the vaccine booking process for my family who were unable to book a slot due to their lack of proficiency with technology. I hope it will be helpful to other folks and gives them a chance to get vaccinated. Please report issues by sending an email to sapoorve@gmail.com
+Hi! I made BookMySlot to automate the vaccine booking process for my family who were unable to book a slot due to their lack of proficiency with technology. I hope it will be helpful to other folks and gives them a chance to get vaccinated. Please report issues by sending an email to [contact@bookmyslot.life](mailto:contact@bookmyslot.life)
+
+## Donation
+
+If the app helped you, please consider supporting the development of this app! Donations can be made at [www.instamojo.com/@bookmyslot](www.instamojo.com/@bookmyslot).  60% of all proceeds will be donated for COVID relief.
 
 ## Stats
 
 <!-- https://hits.seeyoufarm.com/#badge -->
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fbookmyslot.life&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Page+visits&edge_flat=false)](https://hits.seeyoufarm.com)  
 ## Changelog
+
+v5.0.0:
+- Now beneficiary names are fetched for easy use
+- Session will not keep getting logged out
+- Added prompt to update the app
+- Added link for donation
 
 v4.0.0:
 - Added option to restrict vaccine name, vaccine price
