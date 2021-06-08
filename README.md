@@ -75,6 +75,11 @@ Hi! I made BookMySlot to automate the vaccine booking process for my family who 
 
 If the app helped you, please consider supporting the development of this app! **Donations can be made at [https://rzp.io/l/bookmyslot](https://rzp.io/l/bookmyslot). 60% of all proceeds will be donated for COVID relief.**
 
+<form>
+  <script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_HKeHAYhv3UOVKo" async>
+  </script>
+</form>
+
 ## Stats
 
 <!-- https://hits.seeyoufarm.com/#badge -->
