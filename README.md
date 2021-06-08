@@ -73,11 +73,11 @@ Hi! I made BookMySlot to automate the vaccine booking process for my family who 
 
 ## Donation
 
-If the app helped you, please consider supporting the development of this app! 60% of all proceeds will be donated for COVID relief.**  
+If the app helped you, please consider supporting the development of this app! **60% of all proceeds will be donated for COVID relief.**  
 Please click the button below to donate. 
 
 <form>
-  <script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_HKeHAYhv3UOVKo" async>
+  <script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_HKfrUOWYZDvUhR" async>
   </script>
 </form>
 
