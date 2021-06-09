@@ -1,1 +1,1 @@
-pyinstaller gui.py --windowed --onefile --add-data 'data/captcha.wav;data/' --add-data 'data/logout.wav;data/' -y -n 'Book My Slot' --icon 'data/icons/vaccine.ico'
+pyinstaller gui.py --windowed --onefile --add-data 'data/confirm.wav;data/' --add-data 'data/login.wav;data/' --add-data 'data/success.wav;data/' -y -n 'Book My Slot' --icon 'data/icons/vaccine.ico'
