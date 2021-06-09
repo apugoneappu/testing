@@ -16,7 +16,7 @@ from src.beneficiaries import Beneficiaries
 
 ###############################################################
 TIME_PERIOD_MS = 3500
-CURRENT_VERSION = '5.0.0'
+CURRENT_VERSION = '6.0.0'
 ###############################################################
 
 class GUI():
