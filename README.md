@@ -1,4 +1,5 @@
-<img width="912" alt="Screenshot 2021-05-29 at 11 57 55 PM" src="https://user-images.githubusercontent.com/15952329/120083360-c6c86e00-c0e5-11eb-8dde-821f7069d640.png">
+<img width="912" alt="Screenshot 2021-06-09 at 5 49 42 PM" src="https://user-images.githubusercontent.com/15952329/121356131-36442600-c94e-11eb-893f-d97292bf1c7d.png">
+
 
 ## Table of contents
 - [Table of contents](#table-of-contents)
@@ -18,7 +19,7 @@ BookMySlot helps you to book a vaccination slot easily. You need to enter your y
 [Click here to download for macOS v6](https://dl.dropbox.com/s/wjwun81b842in68/BookMySlot_macos_v6.0.0.zip)  
 [Click here to download for Windows v6](https://dl.dropbox.com/s/n8vlqkdhutvwqho/BookMySlot_windows_v6.0.0.zip)
 
-Version v5 release date: 9th June 5:53 PM 
+Version v6 release date: 9th June 5:53 PM 
 
 After downloading the .zip file, uncompress it and click on Book My Slot app.  
 
@@ -30,15 +31,15 @@ For macOS, you may have to allow unsigned apps to run from System Preferences ->
 2. Enter the received OTP (6 digits)<br/>Example: OTP - `475384`
 3. BookMySlot tries to book a vaccination centre as close to your pincode (`573247`) as possible. To ensure that the vaccination centre is not too far, we will not book a vaccination centre outside of the range of pincodes pincode_from to pincode_to.<br/>Example: pincode_from - `573240`, pincode - `573247`, pincode_to - `573250`
 4. Click the `Get beneficiaries` button. Then, select all the names for which you wish to book a slot for. 
-5. **(Optional) You can remove the confirmation before slot booking by unselecting the 'Confirm slot details before booking option'. However, this may lead to booking at unwanted centres.**
+5. **(Optional) You can remove the confirmation before slot booking by unselecting the 'Confirm slot details before booking' option. However, this may lead to booking at unwanted centres.**
 6. (Optional) If you wish to book a slot for only some of the available vaccine types, enter their names here. If empty, BookMySlot will try to book for all available vaccines.<br/>Example: vaccine names - `Covaxin, Covishield`
 7. (Optional) If you wish to book only free or paid slots, you can select the vaccine cost. 
 8. Select your state from the list of states.<br/>Example: choose `Rajasthan`
 9. Select your district(s) from the list of districts. To select more than one district, hold the control key while clicking them.<br/>Example: choose `Jaipur I` and `Jaisalmer`
 10. Click `Submit`
-11. As soon as a vaccination appointment is available, a new window popup opens up to show a captcha image. The captcha popup contains important details such as centre name, centre address, date and time of the booking. **To grab your attention, BookMySlot will make a sound when the captcha is required.**<br/><img height="200" alt="Screenshot 2021-05-21 at 8 18 21 AM" src="https://user-images.githubusercontent.com/15952329/119075690-d6bdbf00-ba0e-11eb-90f0-f603de9a7e63.png">
+11. As soon as a vaccination appointment is available, a new window popup opens up to show a captcha image. The captcha popup contains important details such as centre name, centre address, date and time of the booking. **To grab your attention, BookMySlot will make a sound when the captcha is required.**<br/><img width="372" alt="Screenshot 2021-06-09 at 6 10 05 PM" src="https://user-images.githubusercontent.com/15952329/121356230-49ef8c80-c94e-11eb-9e6a-d1a848e3c2dd.png">
 12. If you would like to proceed booking with the details shown in the captcha window, enter the captcha and press `OK`. **If you don't want to proceed booking in a particular centre, press cancel and that centre will be blacklisted for you (only for the current session).** 
-13. If the booking is successful, a confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc.<br/><img width="372" alt="Screenshot 2021-05-16 at 10 39 19 PM" src="https://user-images.githubusercontent.com/15952329/118413736-69342a80-b6be-11eb-83a0-88a876393cd4.png">
+13. If the booking is successful, a confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc.<br/><img width="607" alt="Screenshot 2021-06-09 at 6 10 14 PM" src="https://user-images.githubusercontent.com/15952329/121356247-4c51e680-c94e-11eb-8660-8a6bf62cb161.png">
 14. If the booking was unsuccessful for any reason (appointment slot filled before confirmation, incorrect captcha etc.), then BookMySlot will keep looking for more appointments.
 15. The current session expires after 15 minutes. You can see the time remaining in the current session at the top-right of the window. **BookMySlot will show a popup and play a sound prompting you to login again with a new OTP after the current session expires.**
 
