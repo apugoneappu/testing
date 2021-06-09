@@ -4,8 +4,8 @@ show_downloads: true
 description: A simple desktop app for automatic vaccine appointment booking
 github:
   is_project_page: false
-  zip_url: https://dl.dropbox.com/s/r895nugzsooallr/BookMySlot_macos_v5.0.0.zip
-  tar_url: https://dl.dropbox.com/s/pnirxuy1mdpfwp7/BookMySlot_windows_v5.0.0.zip
+  zip_url: https://dl.dropbox.com/s/wjwun81b842in68/BookMySlot_macos_v6.0.0.zip
+  tar_url: https://dl.dropbox.com/s/n8vlqkdhutvwqho/BookMySlot_windows_v6.0.0.zip
 google_analytics: G-B9WG3RZ3PD
 
 staticman_url: https://staticman-github-comments.herokuapp.com/v2/entry/apugoneappu/bookmyslot/docs/comments
