@@ -37,15 +37,15 @@ For macOS, you may have to allow unsigned apps to run from System Preferences ->
 8. Select your state from the list of states.<br/>Example: choose `Rajasthan`
 9. Select your district(s) from the list of districts. To select more than one district, hold the control key while clicking them.<br/>Example: choose `Jaipur I` and `Jaisalmer`
 10. Click `Submit`
-11. As soon as a vaccination appointment is available, a new window popup opens up to show a captcha image. The captcha popup contains important details such as centre name, centre address, date and time of the booking. **To grab your attention, BookMySlot will make a sound when the captcha is required.**<br/><img width="372" alt="Screenshot 2021-06-09 at 6 10 05 PM" src="https://user-images.githubusercontent.com/15952329/121356230-49ef8c80-c94e-11eb-9e6a-d1a848e3c2dd.png">
-12. If you would like to proceed booking with the details shown in the captcha window, enter the captcha and press `OK`. **If you don't want to proceed booking in a particular centre, press cancel and that centre will be blacklisted for you (only for the current session).** 
+11. As soon as a vaccination appointment is available, a new window popup opens up to confirm the booking. The popup contains important details such as centre name, centre address, date and time of the booking. **To grab your attention, BookMySlot will make a sound when the confirmation is required.**<br/><img width="372" alt="Screenshot 2021-06-09 at 6 10 05 PM" src="https://user-images.githubusercontent.com/15952329/121356230-49ef8c80-c94e-11eb-9e6a-d1a848e3c2dd.png">
+12. If you would like to proceed booking with the details shown in the popup, press `OK`. **If you don't want to proceed booking in a particular centre, press cancel and that centre will be blacklisted for you (only for the current session).** 
 13. If the booking is successful, a confirmation popup opens up with the details of the booking, such as person names, centre name, date of appointment etc.<br/><img width="607" alt="Screenshot 2021-06-09 at 6 10 14 PM" src="https://user-images.githubusercontent.com/15952329/121356247-4c51e680-c94e-11eb-8660-8a6bf62cb161.png">
-14. If the booking was unsuccessful for any reason (appointment slot filled before confirmation, incorrect captcha etc.), then BookMySlot will keep looking for more appointments.
+14. If the booking was unsuccessful for any reason (appointment slot filled before confirmation etc.), then BookMySlot will keep looking for more appointments.
 15. The current session expires after 15 minutes. You can see the time remaining in the current session at the top-right of the window. **BookMySlot will show a popup and play a sound prompting you to login again with a new OTP after the current session expires.**
 
 ## Booking a nearby vaccination centre
 
-BookMySlot tries to book a vaccination centre as close to your `pincode` as possible. To ensure that the vaccination centre is not too far, we will not book a vaccination centre outside of the range of pincodes `pincode_from` to `pincode_to`. If you wish not to book at certain centres within this pincode range, you can simply click cancel on the captcha window for those centres to black list them.
+BookMySlot tries to book a vaccination centre as close to your `pincode` as possible. To ensure that the vaccination centre is not too far, we will not book a vaccination centre outside of the range of pincodes `pincode_from` to `pincode_to`. If you wish not to book at certain centres within this pincode range, you can simply click cancel on the confirmation popup for those centres to black list them.
 
 ## About me
 
