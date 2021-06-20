@@ -16,10 +16,15 @@
 BookMySlot helps you to book a vaccination slot easily. You need to enter your your basic details and preferences as detailed in the [how to use](#how-to-use) section. Due to CoWIN restrictions, the session expires after 15 minutes. BookMySlot shows the time remaining for the current session and it will show a popup and play an audio asking you to re-login once the current session expires.
 
 ## Downloads
-[Click here to download for macOS v6](https://dl.dropbox.com/s/wjwun81b842in68/BookMySlot_macos_v6.0.0.zip)  
-[Click here to download for Windows v6](https://dl.dropbox.com/s/n8vlqkdhutvwqho/BookMySlot_windows_v6.0.0.zip)
+### [Click here to download for macOS v6](https://dl.dropbox.com/s/wjwun81b842in68/BookMySlot_macos_v6.0.0.zip)  
+### [Click here to download for Windows v6](https://dl.dropbox.com/s/n8vlqkdhutvwqho/BookMySlot_windows_v6.0.0.zip)
 
-Version v6 release date: 9th June 5:53 PM 
+### [Click here to download Fully automatic version for macOS vfm1](#TODO)  
+### [Click here to download Fully automatic version for windows vfw1](https://dl.dropbox.com/s/ek0c4h6fe4h3n3v/BookMySlot_windows_vfw1.0.0.zip)  
+### [Click here to download OTP reader for Android vfa1](https://dl.dropbox.com/s/fm6edwzk9g0mxv5/BookMySlot_android_v1.0.0.apk) - Please visit [this page](https://www.verizon.com/support/knowledge-base-222186/) to allow installation of apps from outside the play store.
+
+Version v6 release date: 9th June 5:53 PM
+Android v1 release date 20th June 7:17 AM 
 
 After downloading the .zip file, uncompress it and click on Book My Slot app.  
 
