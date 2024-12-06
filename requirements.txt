@@ -5,7 +5,7 @@ cssselect2==0.4.1
 idna==2.10
 lxml==4.6.3
 macholib==1.14
-numpy==1.20.3
+numpy==1.22.0
 pandas==1.2.4
 Pillow==8.2.0
 pyinstaller==4.3
